@@ -21,7 +21,7 @@ export default function usePrayer() {
       return true;
     } catch (err) {
       console.error(err);
-      setError(err.message);
+      setError(err.message || "Erro ao enviar oração.");
       return false;
     } finally {
       setLoading(false);

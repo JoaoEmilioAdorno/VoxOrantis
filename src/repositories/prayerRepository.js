@@ -1,16 +1,17 @@
 import { supabase } from "../lib/supabase";
 
-export async function fetchActivePrayers() {
+export async function getActivePrayers() {
   const { data, error } = await supabase
     .from("prayers")
-    .select("*")
-    .gt("expires_at", new Date().toISOString());
+    .select("id, latitude, longitude")
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: true });
 
   if (error) {
     throw error;
   }
 
-  return data;
+  return data ?? [];
 }
 
 export async function createPrayer({

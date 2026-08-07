@@ -1,13 +1,14 @@
 // src/services/prayerService.js
+
 import {
-  fetchActivePrayers,
+  getActivePrayers as repositoryGetActivePrayers,
   createPrayer,
 } from "../repositories/prayerRepository";
 
 export async function getActivePrayers() {
-  return await fetchActivePrayers();
+  return repositoryGetActivePrayers();
 }
 
 export async function savePrayer(prayer) {
-  return await createPrayer(prayer);
+  return createPrayer(prayer);
 }
