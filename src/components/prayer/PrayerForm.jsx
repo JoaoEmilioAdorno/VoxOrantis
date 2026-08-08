@@ -1,4 +1,4 @@
-import usePrayer from "../../hooks/usePrayer";
+import usePrayer, { PRAYER_STATUS } from "../../hooks/usePrayer";
 import PrayerButton from "./PrayerButton";
 
 export default function PrayerForm() {
@@ -7,13 +7,12 @@ export default function PrayerForm() {
     setNickname,
     loading,
     error,
+    status,
     submitPrayer,
   } = usePrayer();
 
   async function handleSubmit() {
-    // Coordenadas provisórias
-    // No Commit 6 serão substituídas pela Geolocalização.
-    await submitPrayer(-15.601, -56.097);
+    await submitPrayer();
   }
 
   return (
@@ -32,6 +31,24 @@ export default function PrayerForm() {
         loading={loading}
         onClick={handleSubmit}
       />
+
+      {status === PRAYER_STATUS.LOCATING && (
+        <p>
+          📍 Obtendo sua localização...
+        </p>
+      )}
+
+      {status === PRAYER_STATUS.SENDING && (
+        <p>
+          🙏 Enviando sua oração...
+        </p>
+      )}
+
+      {status === PRAYER_STATUS.SUCCESS && (
+        <p>
+          ✨ Ave Maria registrada.
+        </p>
+      )}
 
       {error && (
         <p style={{ color: "red" }}>

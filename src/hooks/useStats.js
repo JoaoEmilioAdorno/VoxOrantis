@@ -27,13 +27,16 @@ export default function useStats() {
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
+          event: "*",
           schema: "public",
           table: "stats",
         },
         (payload) => {
-          console.log("📊 Stats atualizadas:", payload);
-          loadStats();
+          console.log("📊 EVENTO STATS REALTIME:", payload);
+
+          if (payload.new) {
+            setStats(payload.new);
+          }
         }
       )
       .subscribe((status) => {

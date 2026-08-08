@@ -16,6 +16,7 @@ body,
 #root {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -24,21 +25,92 @@ body {
   font-family: var(--font-family);
 }
 
-main {
-  min-height: 100vh;
+/* Estrutura principal da aplicação */
+
+.app {
+  width: 100%;
+  height: 100dvh;
 
   display: flex;
   flex-direction: column;
 
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
+}
+
+/* Área reservada para título e futuro menu */
+
+.app-header {
+  position: relative;
+  z-index: 20;
+
+  flex-shrink: 0;
+
+  padding: 1rem 2rem;
 
   text-align: center;
 }
 
+/* Área útil abaixo do header */
+
+.app-main {
+  position: relative;
+
+  flex: 1;
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+/* Container principal do globo */
+
+.globe-section {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+/* Globo fica no fundo */
+
+.globe-layer {
+  position: absolute;
+  inset: 0;
+
+  z-index: 0;
+
+  overflow: hidden;
+}
+
+/* Formulário acima do globo */
+
+.prayer-layer {
+  position: absolute;
+
+  right: 2rem;
+  bottom: 2rem;
+
+  z-index: 10;
+
+  text-align: center;
+}
+
+/* Estatísticas acima do globo */
+
+.stats-layer {
+  position: absolute;
+
+  left: 2rem;
+  bottom: 2rem;
+
+  z-index: 10;
+
+  text-align: left;
+}
+
 h1 {
   font-size: 3rem;
-  margin-bottom: 1rem;
 }
 
 p {

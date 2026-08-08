@@ -7,28 +7,43 @@ import useStats from "./hooks/useStats";
 import usePrayerMap from "./hooks/usePrayerMap";
 
 function App() {
-  const { stats, loading } = useStats();
+  const { stats, loading: statsLoading } = useStats();
   const { points } = usePrayerMap();
 
   return (
-    <main>
-      <h1>Vox Orantis</h1>
+    <div className="app">
+      <header className="app-header">
+        <h1>Vox Orantis</h1>
 
-      <WorldGlobe points={points} />
+        {/*
+          Espaço reservado para o menu futuro.
+          Não implementaremos a navegação neste commit.
+        */}
+      </header>
 
-      <PrayerForm />
+      <main className="app-main">
+        <section className="globe-section">
+          <div className="globe-layer">
+            <WorldGlobe points={points} />
+          </div>
 
-      <hr />
+          <div className="prayer-layer">
+            <PrayerForm />
+          </div>
 
-      {loading ? (
-        <p>Carregando estatísticas...</p>
-      ) : (
-        <>
-          <p>Total: {stats?.total_prayers}</p>
-          <p>Hoje: {stats?.today_prayers}</p>
-        </>
-      )}
-    </main>
+          <div className="stats-layer">
+            {statsLoading ? (
+              <p>Carregando estatísticas...</p>
+            ) : (
+              <>
+                <p>Total: {stats?.total_prayers ?? 0}</p>
+                <p>Hoje: {stats?.today_prayers ?? 0}</p>
+              </>
+            )}
+          </div>
+        </section>
+      </main>
+    </div>
   );
 }
 
