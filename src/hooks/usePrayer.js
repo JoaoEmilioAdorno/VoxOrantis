@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { savePrayer } from "../services/prayerService";
 import useGeolocation from "./useGeolocation";
 
@@ -7,6 +7,7 @@ export const PRAYER_STATUS = {
   LOCATING: "locating",
   SENDING: "sending",
   SUCCESS: "success",
+  COOLDOWN: "cooldown",
   ERROR: "error",
 };
 
@@ -20,17 +21,30 @@ export default function usePrayer() {
 
   const submitLockRef = useRef(false);
   const lastPrayerRef = useRef(0);
+  const cooldownTimerRef = useRef(null);
 
   const {
     getCurrentLocation,
     resetLocation,
   } = useGeolocation();
 
+  function startCooldownTimer(remainingMs) {
+    if (cooldownTimerRef.current) {
+      clearTimeout(cooldownTimerRef.current);
+    }
+
+    cooldownTimerRef.current = setTimeout(() => {
+      setError(null);
+      setStatus(PRAYER_STATUS.IDLE);
+
+      cooldownTimerRef.current = null;
+    }, remainingMs);
+  }
+
   async function submitPrayer() {
     const now = Date.now();
 
-    // Proteção 1:
-    // impede dois envios acontecendo ao mesmo tempo
+    // Impede dois envios simultâneos
     if (submitLockRef.current) {
       console.log(
         "🙏 Envio ignorado: oração já está sendo processada."
@@ -39,14 +53,24 @@ export default function usePrayer() {
       return false;
     }
 
-    // Proteção 2:
-    // impede várias orações em sequência muito rápida
+    // Proteção local contra cliques repetidos
     const elapsed = now - lastPrayerRef.current;
 
     if (elapsed < PRAYER_COOLDOWN_MS) {
+      const remainingMs =
+        PRAYER_COOLDOWN_MS - elapsed;
+
       const remainingSeconds = Math.ceil(
-        (PRAYER_COOLDOWN_MS - elapsed) / 1000
+        remainingMs / 1000
       );
+
+      setError(
+        `Sua oração já foi registrada. Aguarde ${remainingSeconds}s para oferecer outra.`
+      );
+
+      setStatus(PRAYER_STATUS.COOLDOWN);
+
+      startCooldownTimer(remainingMs);
 
       console.log(
         `🙏 Aguarde ${remainingSeconds}s antes de enviar outra oração.`
@@ -72,8 +96,6 @@ export default function usePrayer() {
         longitude: position.longitude,
       });
 
-      // Marca o horário somente depois que a oração
-      // foi realmente salva com sucesso
       lastPrayerRef.current = Date.now();
 
       setNickname("");
@@ -85,6 +107,26 @@ export default function usePrayer() {
     } catch (err) {
       console.error(err);
 
+      // Bloqueio realizado pelo backend
+      if (
+        err.message?.includes(
+          "Aguarde alguns segundos antes de enviar outra oração"
+        )
+      ) {
+        setError(
+          "Sua oração já foi registrada. Aguarde alguns segundos para oferecer outra."
+        );
+
+        setStatus(PRAYER_STATUS.COOLDOWN);
+
+        // Como o backend não informa exatamente quanto tempo resta,
+        // usamos novamente o período completo de segurança.
+        startCooldownTimer(PRAYER_COOLDOWN_MS);
+
+        return false;
+      }
+
+      // Erro verdadeiro
       setError(
         err.message || "Erro ao enviar oração."
       );
@@ -97,6 +139,14 @@ export default function usePrayer() {
       submitLockRef.current = false;
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) {
+        clearTimeout(cooldownTimerRef.current);
+      }
+    };
+  }, []);
 
   return {
     nickname,

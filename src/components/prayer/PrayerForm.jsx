@@ -29,6 +29,7 @@ export default function PrayerForm() {
 
       <PrayerButton
         loading={loading}
+        status={status}
         onClick={handleSubmit}
       />
 
@@ -50,7 +51,13 @@ export default function PrayerForm() {
         </p>
       )}
 
-      {error && (
+      {status === PRAYER_STATUS.COOLDOWN && error && (
+        <p>
+          🙏 {error}
+        </p>
+      )}
+
+      {status === PRAYER_STATUS.ERROR && error && (
         <p style={{ color: "red" }}>
           {error}
         </p>
