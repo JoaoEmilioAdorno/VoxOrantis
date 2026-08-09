@@ -1,113 +1,99 @@
 -- Vox Orantis
--- Sprint 2 — Commit 13
--- Validação e sanitização da RPC create_prayer
+-- Sprint 2 — Commit 14
+-- Integridade e segurança estrutural do banco
+
+
+-- =========================================================
+-- CONSTRAINTS — PRAYERS
+-- =========================================================
 
 ALTER TABLE public.prayers
-ADD COLUMN IF NOT EXISTS device_id text;
+DROP CONSTRAINT IF EXISTS prayers_latitude_valid;
+
+ALTER TABLE public.prayers
+ADD CONSTRAINT prayers_latitude_valid
+CHECK (latitude >= -90 AND latitude <= 90);
 
 
-CREATE OR REPLACE FUNCTION public.create_prayer(
-    p_latitude double precision,
-    p_longitude double precision,
-    p_nickname text DEFAULT NULL::text,
-    p_device_id text DEFAULT NULL::text
-)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $function$
-BEGIN
+ALTER TABLE public.prayers
+DROP CONSTRAINT IF EXISTS prayers_longitude_valid;
 
-    -- =========================================================
-    -- VALIDAÇÕES DE ENTRADA
-    -- =========================================================
-
-    IF p_latitude IS NULL
-       OR p_latitude < -90
-       OR p_latitude > 90
-    THEN
-        RAISE EXCEPTION
-            'Latitude inválida.';
-    END IF;
+ALTER TABLE public.prayers
+ADD CONSTRAINT prayers_longitude_valid
+CHECK (longitude >= -180 AND longitude <= 180);
 
 
-    IF p_longitude IS NULL
-       OR p_longitude < -180
-       OR p_longitude > 180
-    THEN
-        RAISE EXCEPTION
-            'Longitude inválida.';
-    END IF;
+ALTER TABLE public.prayers
+DROP CONSTRAINT IF EXISTS prayers_nickname_length;
+
+ALTER TABLE public.prayers
+ADD CONSTRAINT prayers_nickname_length
+CHECK (
+    nickname IS NULL
+    OR length(nickname) <= 40
+);
 
 
-    IF p_nickname IS NOT NULL
-       AND length(trim(p_nickname)) > 40
-    THEN
-        RAISE EXCEPTION
-            'Nome ou apelido deve ter no máximo 40 caracteres.';
-    END IF;
+-- =========================================================
+-- CONSTRAINTS — STATS
+-- =========================================================
+
+ALTER TABLE public.stats
+DROP CONSTRAINT IF EXISTS stats_total_prayers_nonnegative;
+
+ALTER TABLE public.stats
+ADD CONSTRAINT stats_total_prayers_nonnegative
+CHECK (total_prayers >= 0);
 
 
-    IF p_device_id IS NULL
-       OR trim(p_device_id) = ''
-    THEN
-        RAISE EXCEPTION
-            'Identificador do dispositivo inválido.';
-    END IF;
+ALTER TABLE public.stats
+DROP CONSTRAINT IF EXISTS stats_today_prayers_nonnegative;
+
+ALTER TABLE public.stats
+ADD CONSTRAINT stats_today_prayers_nonnegative
+CHECK (today_prayers >= 0);
 
 
-    BEGIN
-        PERFORM p_device_id::uuid;
-    EXCEPTION
-        WHEN invalid_text_representation THEN
-            RAISE EXCEPTION
-                'Identificador do dispositivo inválido.';
-    END;
+-- =========================================================
+-- REMOVE ACESSO DIRETO DE ESCRITA
+-- =========================================================
+
+DROP POLICY IF EXISTS "Public can insert prayers"
+ON public.prayers;
+
+DROP POLICY IF EXISTS "RPC can update stats"
+ON public.stats;
 
 
-    -- =========================================================
-    -- PROTEÇÃO ANTI-SPAM POR DISPOSITIVO ANÔNIMO
-    -- =========================================================
+-- =========================================================
+-- REMOVE LEITURA DIRETA DE PRAYERS
+-- =========================================================
 
-    IF EXISTS (
-        SELECT 1
-        FROM public.prayers
-        WHERE device_id = p_device_id
-          AND created_at >= now() - interval '10 seconds'
-    ) THEN
-        RAISE EXCEPTION
-            'Aguarde alguns segundos antes de enviar outra oração.';
-    END IF;
+DROP POLICY IF EXISTS "Public can read prayers"
+ON public.prayers;
 
 
-    -- =========================================================
-    -- SALVA A ORAÇÃO
-    -- =========================================================
+-- =========================================================
+-- VIEW PÚBLICA SEGURA
+-- =========================================================
 
-    INSERT INTO public.prayers (
-        latitude,
-        longitude,
-        nickname,
-        device_id
-    )
-    VALUES (
-        p_latitude,
-        p_longitude,
-        NULLIF(trim(p_nickname), ''),
-        p_device_id
-    );
+CREATE OR REPLACE VIEW public.public_active_prayers
+WITH (security_invoker = true)
+AS
+SELECT
+    id,
+    latitude,
+    longitude,
+    created_at,
+    expires_at
+FROM public.prayers
+WHERE expires_at > now();
 
 
-    -- =========================================================
-    -- ATUALIZA O CONTADOR MUNDIAL
-    -- =========================================================
+-- =========================================================
+-- PERMISSÃO DE LEITURA DA VIEW
+-- =========================================================
 
-    UPDATE public.stats
-    SET
-        total_prayers = total_prayers + 1,
-        today_prayers = today_prayers + 1,
-        updated_at = now()
-    WHERE id = 1;
-
-END;
-$function$;
+GRANT SELECT
+ON public.public_active_prayers
+TO anon, authenticated;
