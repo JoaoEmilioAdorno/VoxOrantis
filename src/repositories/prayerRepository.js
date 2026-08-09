@@ -15,11 +15,10 @@ function getAnonymousDeviceId() {
 
 export async function getActivePrayers() {
   const { data, error } = await supabase
-    .from("prayers")
+    .from("public_active_prayers")
     .select(
       "id, latitude, longitude, created_at, expires_at"
     )
-    .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: true });
 
   if (error) {
