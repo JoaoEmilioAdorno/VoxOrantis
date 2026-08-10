@@ -58,38 +58,79 @@ function App() {
 
   function renderPanelContent() {
     switch (activePanel) {
-      case "about":
-        return (
-          <>
-            <h2>Quem somos</h2>
+     case "about":
+  return (
+    <>
+      <h2>Quem somos</h2>
 
-            <p>
-              O Vox Orantis nasceu com uma proposta simples:
-              unir pessoas do mundo inteiro em oração.
-            </p>
+      <p>
+        O Vox Orantis nasceu de um momento simples de inspiração
+        e de um desejo: manter o mundo unido em oração.
+      </p>
 
-            <p>
-              Cada luz que surge no globo representa uma oração
-              oferecida em algum lugar do mundo.
-            </p>
+      <p>
+        Enquanto eu assistia ao podcast Annima, com Bertaldo e
+        Kenia, ouvi Bertaldo contar que a oração diária do Rosário
+        fazia parte de sua rotina. Naquele instante, também senti
+        no coração a necessidade de tornar a oração uma presença
+        constante em minha vida.
+      </p>
 
-            <p>
-              Aqui não existem fronteiras, diferenças ou
-              classificações entre as pessoas. Existe apenas
-              a oração que nos une.
-            </p>
+      <p>
+        Então surgiu uma ideia: e se conseguíssemos formar uma
+        corrente de oração durante as 24 horas do dia, com uma
+        pessoa oferecendo o Rosário a cada hora?
+      </p>
 
-            <p>
-              O Vox Orantis começa com a Ave Maria e continuará
-              crescendo com novas capelas, testemunhos e outras
-              formas de oração.
-            </p>
+      <p>
+        Logo percebi a dificuldade de reunir e organizar essas
+        pessoas. Mas também percebi algo maior: não precisávamos
+        estar no mesmo lugar. Poderíamos estar espalhados pelo
+        mundo e, ainda assim, unidos pela oração.
+      </p>
 
-            <p className="panel-highlight">
-              Unindo o mundo em oração.
-            </p>
-          </>
-        );
+      <p>
+        Foi desse pensamento que nasceu o Vox Orantis.
+      </p>
+
+      <p>
+        Começamos pela Ave Maria. Por ser uma oração breve,
+        conhecida e profundamente ligada à devoção mariana,
+        qualquer pessoa pode dedicar alguns instantes do seu dia
+        e fazer parte dessa corrente.
+      </p>
+
+      <p>
+        Cada luz que aparece no globo representa uma dessas
+        orações sendo oferecida em algum lugar do mundo.
+        Uma pequena luz individual que, junto de tantas outras,
+        pode manter uma corrente de oração atravessando países,
+        continentes e horas do dia.
+      </p>
+
+      <p>
+        Este é apenas o primeiro passo. No futuro, queremos também
+        criar uma corrente dedicada ao Rosário e abrir novos
+        espaços para intenções, testemunhos de graças alcançadas
+        e outras orações.
+      </p>
+
+      <p>
+        Nossa esperança é simples: que, enquanto houver alguém
+        disposto a rezar em algum lugar do mundo, a oração
+        continue acesa.
+      </p>
+      <p> Caso sinta no seu coração e possa me ajudar com custos
+         de implantação e manutenção, faça uma doação de qualquer
+         valor no pix:
+          <p className="panel-highlight">xomanoje@gmail.com </p> 
+        </p>
+
+      <p className="panel-highlight">
+        Vox Orantis — Unindo o mundo em oração.
+      </p>
+    </>
+  );
 
       case "prayer-chapel":
         return (
