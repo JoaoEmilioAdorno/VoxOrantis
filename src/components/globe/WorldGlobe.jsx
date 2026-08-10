@@ -9,8 +9,8 @@ export default function WorldGlobe({ points = [] }) {
 
     const controls = globeRef.current.controls();
 
-    controls.autoRotate = false;
-    controls.autoRotateSpeed = 0.0;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.35;
     controls.enablePan = false;
     controls.enableZoom = true;
 
