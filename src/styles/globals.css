@@ -573,6 +573,40 @@ body {
   line-height: 1.4;
 }
 
+.prayer-success {
+  margin-top: 0.9rem;
+}
+
+.prayer-success-title {
+  margin-top: 0 !important;
+
+  color: var(--text-primary) !important;
+
+  font-size: 0.95rem !important;
+
+  font-weight: 600;
+
+  line-height: 1.4;
+}
+
+.prayer-success-subtitle {
+  margin-top: 0.3rem !important;
+
+  color: var(--text-muted) !important;
+
+  font-size: 0.82rem !important;
+
+  line-height: 1.4;
+}
+
+.prayer-cooldown {
+  color: var(--text-secondary) !important;
+}
+
+.prayer-error {
+  color: #f87171 !important;
+}
+
 
 /* =========================================================
    ESTATÍSTICAS

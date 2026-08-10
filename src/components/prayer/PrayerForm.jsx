@@ -1,4 +1,7 @@
-import usePrayer, { PRAYER_STATUS } from "../../hooks/usePrayer";
+import usePrayer, {
+  PRAYER_STATUS,
+} from "../../hooks/usePrayer";
+
 import PrayerButton from "./PrayerButton";
 
 export default function PrayerForm() {
@@ -21,9 +24,11 @@ export default function PrayerForm() {
 
       <input
         type="text"
-        placeholder="Digite seu nome ou apelido"
+        placeholder="Seu nome ou apelido (opcional)"
         value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+        onChange={(e) =>
+          setNickname(e.target.value)
+        }
         maxLength={40}
       />
 
@@ -33,35 +38,31 @@ export default function PrayerForm() {
         onClick={handleSubmit}
       />
 
-      {status === PRAYER_STATUS.LOCATING && (
-        <p>
-          📍 Obtendo sua localização...
-        </p>
-      )}
-
-      {status === PRAYER_STATUS.SENDING && (
-        <p>
-          🙏 Enviando sua oração...
-        </p>
-      )}
-
       {status === PRAYER_STATUS.SUCCESS && (
-        <p>
-          ✨ Ave Maria registrada.
-        </p>
+        <div className="prayer-success">
+          <p className="prayer-success-title">
+            ✨ Sua oração agora ilumina o mundo.
+          </p>
+
+          <p className="prayer-success-subtitle">
+            Obrigado por fazer parte desta corrente de oração.
+          </p>
+        </div>
       )}
 
-      {status === PRAYER_STATUS.COOLDOWN && error && (
-        <p>
-          🙏 {error}
-        </p>
-      )}
+      {status === PRAYER_STATUS.COOLDOWN &&
+        error && (
+          <p className="prayer-cooldown">
+            🙏 {error}
+          </p>
+        )}
 
-      {status === PRAYER_STATUS.ERROR && error && (
-        <p style={{ color: "red" }}>
-          {error}
-        </p>
-      )}
+      {status === PRAYER_STATUS.ERROR &&
+        error && (
+          <p className="prayer-error">
+            {error}
+          </p>
+        )}
     </section>
   );
 }

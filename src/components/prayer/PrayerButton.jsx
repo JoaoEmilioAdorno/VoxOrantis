@@ -17,10 +17,10 @@ export default function PrayerButton({
         return "Obtendo localização...";
 
       case PRAYER_STATUS.SENDING:
-        return "Enviando oração...";
+        return "Oferecendo Ave Maria...";
 
       case PRAYER_STATUS.SUCCESS:
-        return "Oração enviada ✓";
+        return "Ave Maria oferecida ✓";
 
       case PRAYER_STATUS.COOLDOWN:
         return "Aguarde para oferecer outra";
