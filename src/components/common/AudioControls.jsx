@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import backgroundAudio from "../../assets/audio/background.mp3";
-import aveMariaAudio from "../../assets/audio/ave-maria.mp3";
+import aveMariaAudio from "../../assets/audio/ave-Maria.mp3";
 
 const AudioControls = forwardRef(
   function AudioControls(
