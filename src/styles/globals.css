@@ -762,13 +762,330 @@ body {
 p {
   color: var(--text-secondary);
 }
+/* =========================================================
+   CONTROLES DE ÁUDIO
+========================================================= */
 
+.side-menu-audio {
+  width: 100%;
+
+  margin-top: auto;
+
+  padding-top: 1rem;
+}
+
+.audio-controls {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 0.5rem;
+}
+
+.audio-control-button {
+  position: relative;
+
+  width: 100%;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: var(--text-muted);
+
+  font-size: 1.15rem;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.audio-control-button:hover {
+  color: var(--text-primary);
+
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.audio-control-button.active {
+  color: var(--accent);
+
+  background: var(--accent-soft);
+}
+
+.audio-control-label {
+  position: absolute;
+
+  left: calc(100% + 12px);
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  padding: 0.45rem 0.7rem;
+
+  border-radius: 6px;
+
+  background: rgba(15, 23, 42, 0.98);
+
+  color: var(--text-primary);
+
+  font-size: 0.85rem;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.audio-control-button:hover
+.audio-control-label {
+  opacity: 1;
+
+  transform: translate(4px, -50%);
+}
 
 /* =========================================================
-   RESPONSIVIDADE
+   AVE MARIA — ORAÇÃO EM PERSPECTIVA
+========================================================= */
+
+.prayer-crawl-scene {
+  position: absolute;
+
+  left: 50%;
+  bottom: 0;
+
+  z-index: 15;
+
+  width: min(760px, 68vw);
+  height: 76%;
+
+  transform: translateX(-50%);
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  perspective: 520px;
+}
+
+.prayer-crawl {
+  position: absolute;
+
+  left: 50%;
+
+  /*
+   * PONTO INICIAL DA ORAÇÃO NO DESKTOP.
+   * Agora ela já nasce várias linhas acima.
+   */
+  bottom: 40px;
+
+  width: 100%;
+
+  text-align: center;
+
+  color: #facc15;
+
+  font-size: clamp(1.4rem, 2.5vw, 2.1rem);
+
+  font-weight: 600;
+
+  line-height: 1.65;
+
+  text-shadow:
+    0 0 10px rgba(250, 204, 21, 0.22);
+
+  transform-origin: center bottom;
+
+  animation:
+    prayer-crawl-rise
+    40s linear forwards;
+}
+
+.prayer-crawl p {
+  margin-bottom: 1.3rem;
+
+  color: inherit;
+}
+
+.prayer-crawl-amen {
+  font-size: 1.15em;
+
+  font-weight: 700;
+}
+
+@keyframes prayer-crawl-rise {
+  0% {
+    transform:
+      translateX(-50%)
+      translateY(0)
+      rotateX(22deg)
+      scale(1);
+
+    opacity: 0;
+  }
+
+  5% {
+    transform:
+      translateX(-50%)
+      translateY(-30px)
+      rotateX(22deg)
+      scale(1);
+
+    opacity: 1;
+  }
+
+  25% {
+    transform:
+      translateX(-50%)
+      translateY(-150px)
+      rotateX(22deg)
+      scale(0.90);
+
+    opacity: 1;
+  }
+
+  45% {
+    transform:
+      translateX(-50%)
+      translateY(-280px)
+      rotateX(22deg)
+      scale(0.75);
+
+    opacity: 1;
+  }
+
+  60% {
+    transform:
+      translateX(-50%)
+      translateY(-390px)
+      rotateX(22deg)
+      scale(0.62);
+
+    opacity: 1;
+  }
+
+  72% {
+    transform:
+      translateX(-50%)
+      translateY(-475px)
+      rotateX(22deg)
+      scale(0.52);
+
+    opacity: 1;
+  }
+
+  80% {
+    transform:
+      translateX(-50%)
+      translateY(-530px)
+      rotateX(22deg)
+      scale(0.44);
+
+    opacity: 1;
+  }
+
+  86% {
+    transform:
+      translateX(-50%)
+      translateY(-570px)
+      rotateX(22deg)
+      scale(0.37);
+
+    opacity: 1;
+  }
+
+  91% {
+    transform:
+      translateX(-50%)
+      translateY(-605px)
+      rotateX(22deg)
+      scale(0.31);
+
+    opacity: 0.9;
+  }
+
+  95% {
+    transform:
+      translateX(-50%)
+      translateY(-635px)
+      rotateX(22deg)
+      scale(0.26);
+
+    opacity: 0.7;
+  }
+
+  98% {
+    transform:
+      translateX(-50%)
+      translateY(-660px)
+      rotateX(22deg)
+      scale(0.21);
+
+    opacity: 0.4;
+  }
+
+  100% {
+    transform:
+      translateX(-50%)
+      translateY(-680px)
+      rotateX(22deg)
+      scale(0.17);
+
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   RESPONSIVIDADE — TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
+
+  .side-menu-audio {
+    width: auto;
+
+    margin-top: 0;
+    padding-top: 0;
+
+    flex-shrink: 0;
+  }
+
+  .audio-controls {
+    width: auto;
+
+    flex-direction: row;
+
+    gap: 0;
+  }
+
+  .audio-control-button {
+    width: 38px;
+    height: 58px;
+
+    padding: 0;
+  }
+
+  .audio-control-label {
+    display: none;
+  }
+
   :root {
     --sidebar-width: 62px;
   }
@@ -800,7 +1117,12 @@ p {
 }
 
 
+/* =========================================================
+   RESPONSIVIDADE — CELULAR
+========================================================= */
+
 @media (max-width: 640px) {
+
   .app {
     flex-direction: column;
   }
@@ -848,6 +1170,34 @@ p {
     display: none;
   }
 
+  .side-menu-audio {
+    width: auto;
+
+    margin-top: 0;
+    padding-top: 0;
+
+    flex-shrink: 0;
+  }
+
+  .audio-controls {
+    width: auto;
+
+    flex-direction: row;
+
+    gap: 0;
+  }
+
+  .audio-control-button {
+    width: 38px;
+    height: 58px;
+
+    padding: 0;
+  }
+
+  .audio-control-label {
+    display: none;
+  }
+
   .app-header {
     padding: 0.8rem 1rem 0.4rem;
   }
@@ -888,5 +1238,51 @@ p {
     height: calc(100dvh - 58px);
 
     padding: 1.4rem;
+  }
+
+  .prayer-crawl-scene {
+    width: 90vw;
+    height: 62%;
+  }
+
+  .prayer-crawl {
+    /*
+     * Também começa acima no celular.
+     */
+    bottom: 110px;
+
+    font-size: 1.05rem;
+
+    line-height: 1.55;
+  }
+
+  @keyframes prayer-crawl-rise {
+    0% {
+      transform:
+        translateX(-50%)
+        translateY(0)
+        rotateX(15deg)
+        scale(1);
+
+      opacity: 0;
+    }
+
+    5% {
+      opacity: 1;
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    100% {
+      transform:
+        translateX(-50%)
+        translateY(-680px)
+        rotateX(15deg)
+        scale(0.4);
+
+      opacity: 0;
+    }
   }
 }

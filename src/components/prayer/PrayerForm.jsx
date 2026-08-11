@@ -4,7 +4,9 @@ import usePrayer, {
 
 import PrayerButton from "./PrayerButton";
 
-export default function PrayerForm() {
+export default function PrayerForm({
+  onPrayerStart,
+}) {
   const {
     nickname,
     setNickname,
@@ -15,7 +17,9 @@ export default function PrayerForm() {
   } = usePrayer();
 
   async function handleSubmit() {
-    await submitPrayer();
+    await submitPrayer({
+      onAccepted: onPrayerStart,
+    });
   }
 
   return (
@@ -38,19 +42,23 @@ export default function PrayerForm() {
         onClick={handleSubmit}
       />
 
-      {status === PRAYER_STATUS.SUCCESS && (
+      {status ===
+        PRAYER_STATUS.SUCCESS && (
         <div className="prayer-success">
           <p className="prayer-success-title">
-            ✨ Sua oração agora ilumina o mundo.
+            ✨ Sua oração agora ilumina
+            o mundo.
           </p>
 
           <p className="prayer-success-subtitle">
-            Obrigado por fazer parte desta corrente de oração.
+            Obrigado por fazer parte desta
+            corrente de oração.
           </p>
         </div>
       )}
 
-      {status === PRAYER_STATUS.COOLDOWN &&
+      {status ===
+        PRAYER_STATUS.COOLDOWN &&
         error && (
           <p className="prayer-cooldown">
             🙏 {error}

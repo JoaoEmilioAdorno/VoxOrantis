@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import PrayerCrawl from "./components/prayer/PrayerCrawl";
 
 import "./styles/globals.css";
 
 import WorldGlobe from "./components/globe/WorldGlobe";
 import PrayerForm from "./components/prayer/PrayerForm";
+import AudioControls from "./components/common/AudioControls";
 
 import {
   AboutIcon,
@@ -19,7 +22,16 @@ function App() {
   const { stats, loading: statsLoading } = useStats();
   const { points } = usePrayerMap();
 
-  const [activePanel, setActivePanel] = useState(null);
+  const audioControlsRef = useRef(null);
+
+  const [prayerCrawlActive, setPrayerCrawlActive] =
+    useState(false);
+
+  const [prayerCrawlRunId, setPrayerCrawlRunId] =
+    useState(0);
+
+  const [activePanel, setActivePanel] =
+    useState(null);
 
   const menuItems = [
     {
@@ -52,85 +64,123 @@ function App() {
     setActivePanel(item.id);
   }
 
+ function handlePrayerStart() {
+  setPrayerCrawlRunId(
+    (current) => current + 1
+  );
+
+  setPrayerCrawlActive(true);
+
+  audioControlsRef.current?.startPrayer();
+}
+function handlePrayerStart() {
+  setPrayerCrawlRunId(
+    (current) => current + 1
+  );
+
+  setPrayerCrawlActive(true);
+
+  audioControlsRef.current?.startPrayer();
+}
+
+  function handlePrayerAudioEnd() {
+    setPrayerCrawlActive(false);
+  }
+
   function closePanel() {
     setActivePanel(null);
   }
 
   function renderPanelContent() {
     switch (activePanel) {
-     case "about":
-  return (
-    <>
-      <h2>Quem somos</h2>
+      case "about":
+        return (
+          <>
+            <h2>Quem somos</h2>
 
-      <p>
-        O Vox Orantis nasceu de um momento simples de inspiração
-        e de um desejo: manter o mundo unido em oração.
-      </p>
+            <p>
+              O Vox Orantis nasceu de um momento simples de
+              inspiração e de um desejo: manter o mundo unido
+              em oração.
+            </p>
 
-      <p>
-        Enquanto eu assistia ao podcast Annima, com Bertaldo e
-        Kenia, ouvi Bertaldo contar que a oração diária do Rosário
-        fazia parte de sua rotina. Naquele instante, também senti
-        no coração a necessidade de tornar a oração uma presença
-        constante em minha vida.
-      </p>
+            <p>
+              Enquanto eu assistia ao podcast Annima, com
+              Bertaldo e Kenia, ouvi Bertaldo contar que a
+              oração diária do Rosário fazia parte de sua
+              rotina. Naquele instante, também senti no
+              coração a necessidade de tornar a oração uma
+              presença constante em minha vida.
+            </p>
 
-      <p>
-        Então surgiu uma ideia: e se conseguíssemos formar uma
-        corrente de oração durante as 24 horas do dia, com uma
-        pessoa oferecendo o Rosário a cada hora?
-      </p>
+            <p>
+              Então surgiu uma ideia: e se conseguíssemos
+              formar uma corrente de oração durante as
+              24 horas do dia, com uma pessoa oferecendo
+              o Rosário a cada hora?
+            </p>
 
-      <p>
-        Logo percebi a dificuldade de reunir e organizar essas
-        pessoas. Mas também percebi algo maior: não precisávamos
-        estar no mesmo lugar. Poderíamos estar espalhados pelo
-        mundo e, ainda assim, unidos pela oração.
-      </p>
+            <p>
+              Logo percebi a dificuldade de reunir e organizar
+              essas pessoas. Mas também percebi algo maior:
+              não precisávamos estar no mesmo lugar.
+              Poderíamos estar espalhados pelo mundo e,
+              ainda assim, unidos pela oração.
+            </p>
 
-      <p>
-        Foi desse pensamento que nasceu o Vox Orantis.
-      </p>
+            <p>
+              Foi desse pensamento que nasceu o Vox Orantis.
+            </p>
 
-      <p>
-        Começamos pela Ave Maria. Por ser uma oração breve,
-        conhecida e profundamente ligada à devoção mariana,
-        qualquer pessoa pode dedicar alguns instantes do seu dia
-        e fazer parte dessa corrente.
-      </p>
+            <p>
+              Começamos pela Ave Maria. Por ser uma oração
+              breve, conhecida e profundamente ligada à
+              devoção mariana, qualquer pessoa pode dedicar
+              alguns instantes do seu dia e fazer parte
+              dessa corrente.
+            </p>
 
-      <p>
-        Cada luz que aparece no globo representa uma dessas
-        orações sendo oferecida em algum lugar do mundo.
-        Uma pequena luz individual que, junto de tantas outras,
-        pode manter uma corrente de oração atravessando países,
-        continentes e horas do dia.
-      </p>
+            <p>
+              Cada luz que aparece no globo representa uma
+              dessas orações sendo oferecida em algum lugar
+              do mundo. Uma pequena luz individual que,
+              junto de tantas outras, pode manter uma
+              corrente de oração atravessando países,
+              continentes e horas do dia.
+            </p>
 
-      <p>
-        Este é apenas o primeiro passo. No futuro, queremos também
-        criar uma corrente dedicada ao Rosário e abrir novos
-        espaços para intenções, testemunhos de graças alcançadas
-        e outras orações.
-      </p>
+            <p>
+              Este é apenas o primeiro passo. No futuro,
+              queremos também criar uma corrente dedicada
+              ao Rosário e abrir novos espaços para
+              intenções, testemunhos de graças alcançadas
+              e outras orações.
+            </p>
 
-      <p>
-        Nossa esperança é simples: que, enquanto houver alguém
-        disposto a rezar em algum lugar do mundo, a oração
-        continue acesa.
-      </p>
-      <p> Caso sinta no seu coração e possa me ajudar com custos
-         de implantação e manutenção, faça uma doação de qualquer
-         valor no pix:
-          <p className="panel-highlight">xomanoje@gmail.com </p> 
-        </p>
+            <p>
+              Nossa esperança é simples: que, enquanto
+              houver alguém disposto a rezar em algum lugar
+              do mundo, a oração continue acesa.
+            </p>
 
-      <p className="panel-highlight">
-        Vox Orantis — Unindo o mundo em oração.
-      </p>
-    </>
-  );
+            <div className="donation-message">
+              <p>
+                Caso sinta no seu coração e possa ajudar
+                com os custos de implantação e manutenção
+                do Vox Orantis, você pode fazer uma doação
+                de qualquer valor pelo Pix:
+              </p>
+
+              <p className="panel-highlight">
+                xomanoje@gmail.com
+              </p>
+            </div>
+
+            <p className="panel-highlight">
+              Vox Orantis — Unindo o mundo em oração.
+            </p>
+          </>
+        );
 
       case "prayer-chapel":
         return (
@@ -138,9 +188,9 @@ function App() {
             <h2>Capela de Orações</h2>
 
             <p>
-              Em breve você poderá deixar aqui suas intenções
-              de oração para que outras pessoas se unam a elas
-              em oração.
+              Em breve você poderá deixar aqui suas
+              intenções de oração para que outras pessoas
+              se unam a elas em oração.
             </p>
 
             <p className="coming-soon">
@@ -172,7 +222,8 @@ function App() {
 
             <p>
               O Vox Orantis continuará crescendo com novas
-              orações e páginas dedicadas a diferentes devoções.
+              orações e páginas dedicadas a diferentes
+              devoções.
             </p>
 
             <p>
@@ -194,7 +245,12 @@ function App() {
   return (
     <div className="app">
 
+      {/* =====================================================
+          MENU LATERAL
+      ====================================================== */}
+
       <aside className="side-menu">
+
         <div className="side-menu-logo">
           VO
         </div>
@@ -211,9 +267,13 @@ function App() {
                 key={item.id}
                 type="button"
                 className={`side-menu-item ${
-                  activePanel === item.id ? "active" : ""
+                  activePanel === item.id
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => handleMenuClick(item)}
+                onClick={() =>
+                  handleMenuClick(item)
+                }
                 title={item.label}
                 aria-label={item.label}
               >
@@ -228,17 +288,37 @@ function App() {
             );
           })}
         </nav>
+
+        <div className="side-menu-audio">
+          <AudioControls
+            ref={audioControlsRef}
+            onPrayerEnd={handlePrayerAudioEnd}
+          />
+        </div>
+
       </aside>
 
 
+      {/* =====================================================
+          CONTEÚDO PRINCIPAL
+      ====================================================== */}
+
       <div className="app-content">
 
+        {/* A ORAÇÃO VISUAL É RENDERIZADA AQUI */}
+        <PrayerCrawl
+          active={prayerCrawlActive}
+          runId={prayerCrawlRunId}
+        />
+
         <header className="app-header">
+
           <h1>Vox Orantis</h1>
 
           <p className="app-slogan">
             Unindo o mundo em oração
           </p>
+
         </header>
 
 
@@ -252,13 +332,18 @@ function App() {
 
 
             <div className="prayer-layer">
-              <PrayerForm />
+              <PrayerForm
+                onPrayerStart={handlePrayerStart}
+              />
             </div>
 
 
             <div className="stats-layer">
+
               {statsLoading ? (
-                <p>Carregando estatísticas...</p>
+                <p>
+                  Carregando estatísticas...
+                </p>
               ) : (
                 <>
                   <p>
@@ -276,6 +361,7 @@ function App() {
                   </p>
                 </>
               )}
+
             </div>
 
           </section>
@@ -284,6 +370,10 @@ function App() {
 
       </div>
 
+
+      {/* =====================================================
+          PAINEL
+      ====================================================== */}
 
       {activePanel && (
         <div className="info-panel">

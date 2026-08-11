@@ -41,10 +41,11 @@ export default function usePrayer() {
     }, remainingMs);
   }
 
-  async function submitPrayer() {
+  async function submitPrayer({
+    onAccepted,
+  } = {}) {
     const now = Date.now();
 
-    // Impede dois envios simultâneos
     if (submitLockRef.current) {
       console.log(
         "🙏 Envio ignorado: oração já está sendo processada."
@@ -53,16 +54,15 @@ export default function usePrayer() {
       return false;
     }
 
-    // Proteção local contra cliques repetidos
-    const elapsed = now - lastPrayerRef.current;
+    const elapsed =
+      now - lastPrayerRef.current;
 
     if (elapsed < PRAYER_COOLDOWN_MS) {
       const remainingMs =
         PRAYER_COOLDOWN_MS - elapsed;
 
-      const remainingSeconds = Math.ceil(
-        remainingMs / 1000
-      );
+      const remainingSeconds =
+        Math.ceil(remainingMs / 1000);
 
       setError(
         `Sua oração já foi registrada. Aguarde ${remainingSeconds}s para oferecer outra.`
@@ -72,21 +72,27 @@ export default function usePrayer() {
 
       startCooldownTimer(remainingMs);
 
-      console.log(
-        `🙏 Aguarde ${remainingSeconds}s antes de enviar outra oração.`
-      );
-
       return false;
     }
 
     submitLockRef.current = true;
+
+    /*
+     * A oração foi aceita pelo frontend.
+     *
+     * Disparamos áudio + legenda aqui,
+     * ainda dentro do clique do usuário
+     * e antes da geolocalização assíncrona.
+     */
+    onAccepted?.();
 
     setLoading(true);
     setError(null);
     setStatus(PRAYER_STATUS.LOCATING);
 
     try {
-      const position = await getCurrentLocation();
+      const position =
+        await getCurrentLocation();
 
       setStatus(PRAYER_STATUS.SENDING);
 
@@ -107,7 +113,6 @@ export default function usePrayer() {
     } catch (err) {
       console.error(err);
 
-      // Bloqueio realizado pelo backend
       if (
         err.message?.includes(
           "Aguarde alguns segundos antes de enviar outra oração"
@@ -119,16 +124,16 @@ export default function usePrayer() {
 
         setStatus(PRAYER_STATUS.COOLDOWN);
 
-        // Como o backend não informa exatamente quanto tempo resta,
-        // usamos novamente o período completo de segurança.
-        startCooldownTimer(PRAYER_COOLDOWN_MS);
+        startCooldownTimer(
+          PRAYER_COOLDOWN_MS
+        );
 
         return false;
       }
 
-      // Erro verdadeiro
       setError(
-        err.message || "Erro ao enviar oração."
+        err.message ||
+          "Erro ao enviar oração."
       );
 
       setStatus(PRAYER_STATUS.ERROR);
@@ -143,7 +148,9 @@ export default function usePrayer() {
   useEffect(() => {
     return () => {
       if (cooldownTimerRef.current) {
-        clearTimeout(cooldownTimerRef.current);
+        clearTimeout(
+          cooldownTimerRef.current
+        );
       }
     };
   }, []);
