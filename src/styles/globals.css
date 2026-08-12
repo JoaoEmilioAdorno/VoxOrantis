@@ -646,6 +646,11 @@ body {
 
   font-weight: 700;
 }
+/* =========================================================
+   ÁREA EXTERNA CLICÁVEL DO PAINEL
+========================================================= */
+
+
 
 
 /* =========================================================
@@ -661,7 +666,6 @@ body {
   z-index: 50;
 
   width: min(420px, calc(100vw - var(--sidebar-width)));
-
   height: 100dvh;
 
   padding: 2rem;
@@ -676,82 +680,209 @@ body {
     18px 0 50px rgba(0, 0, 0, 0.28);
 
   overflow-y: auto;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.info-panel-close {
-  position: absolute;
-
-  top: 1rem;
-  right: 1rem;
-
-  width: 38px;
-  height: 38px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-
-  border-radius: 50%;
-
-  background: rgba(255, 255, 255, 0.06);
-
-  color: var(--text-secondary);
-
-  font-size: 1.6rem;
-
-  cursor: pointer;
+.info-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
-.info-panel-close:hover {
-  background: rgba(255, 255, 255, 0.1);
 
-  color: var(--text-primary);
+/* =========================================================
+   CAPELA DE ORAÇÕES
+========================================================= */
+
+.prayer-chapel {
+  padding-bottom: 2rem;
 }
 
-.info-panel-content {
-  padding-top: 3rem;
+.prayer-chapel-header {
+  text-align: center;
 }
 
-.info-panel-content h2 {
-  margin-bottom: 1.3rem;
+.info-panel-content
+.prayer-chapel-header h2 {
+  margin-bottom: 1.5rem;
 
   color: var(--text-primary);
 
   font-size: 1.7rem;
 }
 
-.info-panel-content p {
-  margin-bottom: 1rem;
+.prayer-chapel-verse {
+  margin-bottom: 1.4rem;
 
-  color: var(--text-secondary);
+  color: var(--accent);
 
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-style: italic;
 
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
-.panel-highlight {
-  margin-top: 1.8rem;
+.prayer-chapel-verse span {
+  display: block;
 
-  color: var(--accent) !important;
+  margin-top: 0.25rem;
 
-  font-weight: 600;
+  color: var(--text-muted);
+
+  font-size: 0.82rem;
+  font-style: normal;
 }
 
-.coming-soon {
-  margin-top: 2rem;
+.info-panel-content
+.prayer-chapel-intro {
+  margin-bottom: 1.5rem;
 
-  color: var(--accent) !important;
+  text-align: center;
+}
 
-  font-size: 0.9rem !important;
+.chapel-primary-button,
+.chapel-secondary-button {
+  width: 100%;
+
+  padding: 0.9rem 1rem;
+
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.chapel-primary-button {
+  border: none;
+
+  background: var(--accent);
+
+  color: #111827;
+}
+
+.chapel-primary-button:hover {
+  transform: translateY(-1px);
+}
+
+.prayer-chapel-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 2rem 0;
+
+  background: var(--border-soft);
+}
+
+.prayer-chapel-requests h3 {
+  margin-bottom: 0.55rem;
+
+  color: var(--text-primary);
+
+  font-size: 0.9rem;
+
+  text-align: center;
 
   text-transform: uppercase;
 
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
+}
 
-  font-weight: 700;
+.info-panel-content
+.prayer-chapel-community-message {
+  margin-bottom: 1.4rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.9rem;
+
+  text-align: center;
+}
+
+.prayer-request-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.8rem;
+}
+
+.prayer-request-card {
+  display: flex;
+
+  gap: 0.8rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--border-soft);
+
+  border-radius: 10px;
+
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.prayer-request-symbol {
+  flex-shrink: 0;
+
+  padding-top: 0.1rem;
+
+  font-size: 1rem;
+}
+
+.info-panel-content
+.prayer-request-text {
+  margin-bottom: 0.45rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.93rem;
+
+  line-height: 1.55;
+}
+
+.info-panel-content
+.prayer-request-author {
+  margin-bottom: 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.8rem;
+}
+
+.chapel-secondary-button {
+  margin-top: 1.5rem;
+
+  border: 1px solid rgba(250, 204, 21, 0.35);
+
+  background: var(--accent-soft);
+
+  color: var(--accent);
+}
+
+.chapel-secondary-button:hover {
+  border-color: rgba(250, 204, 21, 0.6);
+
+  background: rgba(250, 204, 21, 0.17);
+}
+
+.info-panel-content
+.prayer-chapel-moderation-note {
+  margin-top: 1rem;
+  margin-bottom: 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.78rem;
+
+  line-height: 1.5;
+
+  text-align: center;
 }
 
 
@@ -859,6 +990,190 @@ p {
   opacity: 1;
 
   transform: translate(4px, -50%);
+}
+/* =========================================================
+   CAPELA — FORMULÁRIO DE PEDIDO
+========================================================= */
+
+.prayer-request-form-wrapper {
+  margin-top: 0.2rem;
+
+  padding: 1rem;
+
+  border: 1px solid var(--border-soft);
+
+  border-radius: 12px;
+
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.prayer-request-form h3,
+.prayer-request-confirmation h3 {
+  margin-bottom: 0.65rem;
+
+  color: var(--text-primary);
+
+  font-size: 1.05rem;
+}
+
+.info-panel-content
+.prayer-request-form-intro {
+  margin-bottom: 1.2rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.88rem;
+
+  line-height: 1.5;
+}
+
+.prayer-request-label {
+  display: block;
+
+  margin-bottom: 0.4rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+}
+
+.prayer-request-form input,
+.prayer-request-form textarea {
+  width: 100%;
+
+  margin-bottom: 1rem;
+
+  padding: 0.8rem 0.85rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 8px;
+
+  outline: none;
+
+  background: rgba(2, 6, 23, 0.72);
+
+  color: var(--text-primary);
+
+  font-family: inherit;
+
+  font-size: 0.92rem;
+}
+
+.prayer-request-form textarea {
+  resize: vertical;
+
+  min-height: 130px;
+  max-height: 240px;
+
+  line-height: 1.5;
+}
+
+.prayer-request-form input::placeholder,
+.prayer-request-form textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.prayer-request-form input:focus,
+.prayer-request-form textarea:focus {
+  border-color: rgba(250, 204, 21, 0.55);
+}
+
+.info-panel-content
+.prayer-request-counter {
+  margin-top: -0.7rem;
+  margin-bottom: 0.7rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.75rem;
+
+  text-align: right;
+}
+
+.info-panel-content
+.prayer-request-privacy {
+  margin-bottom: 1rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.76rem;
+
+  line-height: 1.45;
+}
+
+.prayer-request-form-actions {
+  display: flex;
+
+  gap: 0.7rem;
+}
+
+.prayer-request-form-actions
+.chapel-primary-button {
+  flex: 1;
+}
+
+.chapel-cancel-button {
+  flex: 1;
+
+  padding: 0.9rem 1rem;
+
+  border: 1px solid var(--border-soft);
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.chapel-cancel-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+
+  color: var(--text-primary);
+}
+
+.chapel-primary-button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.prayer-request-confirmation {
+  padding: 0.8rem 0.2rem 0.2rem;
+
+  text-align: center;
+}
+
+.prayer-request-confirmation-icon {
+  margin-bottom: 0.8rem;
+
+  font-size: 1.8rem;
+}
+
+.info-panel-content
+.prayer-request-confirmation p {
+  margin-bottom: 1.2rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.9rem;
+
+  line-height: 1.55;
+}
+
+.prayer-request-confirmation
+.chapel-secondary-button {
+  margin-top: 0;
 }
 
 /* =========================================================
@@ -1116,6 +1431,69 @@ p {
   }
 }
 
+.info-panel-content
+.prayer-request-submit-error {
+  margin-bottom: 1rem;
+
+  color: #f87171;
+
+  font-size: 0.82rem;
+
+  line-height: 1.45;
+
+  text-align: center;
+}
+.info-panel-content
+.prayer-chapel-empty {
+  margin: 1.4rem 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.88rem;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+.info-panel-content
+.prayer-chapel-error {
+  margin: 1.4rem 0;
+
+  color: #f87171;
+
+  font-size: 0.85rem;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+.info-panel-content
+.prayer-chapel-empty {
+  margin: 1.4rem 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.88rem;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+.info-panel-content
+.prayer-chapel-error {
+  margin: 1.4rem 0;
+
+  color: #f87171;
+
+  font-size: 0.85rem;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
 
 /* =========================================================
    RESPONSIVIDADE — CELULAR
@@ -1230,15 +1608,20 @@ p {
     font-size: 0.8rem;
   }
 
-  .info-panel {
-    top: 58px;
-    left: 0;
+  .info-panel-overlay {
+  top: 58px;
+  left: 0;
+}
 
-    width: 100%;
-    height: calc(100dvh - 58px);
+.info-panel {
+  top: 0;
+  left: 0;
 
-    padding: 1.4rem;
-  }
+  width: 100%;
+  height: 100%;
+
+  padding: 1.4rem;
+}
 
   .prayer-crawl-scene {
     width: 90vw;

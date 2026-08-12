@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 
+import PrayerChapel from "./components/chapel/PrayerChapel";
 import PrayerCrawl from "./components/prayer/PrayerCrawl";
 
 import "./styles/globals.css";
@@ -64,24 +65,15 @@ function App() {
     setActivePanel(item.id);
   }
 
- function handlePrayerStart() {
-  setPrayerCrawlRunId(
-    (current) => current + 1
-  );
+  function handlePrayerStart() {
+    setPrayerCrawlRunId(
+      (current) => current + 1
+    );
 
-  setPrayerCrawlActive(true);
+    setPrayerCrawlActive(true);
 
-  audioControlsRef.current?.startPrayer();
-}
-function handlePrayerStart() {
-  setPrayerCrawlRunId(
-    (current) => current + 1
-  );
-
-  setPrayerCrawlActive(true);
-
-  audioControlsRef.current?.startPrayer();
-}
+    audioControlsRef.current?.startPrayer();
+  }
 
   function handlePrayerAudioEnd() {
     setPrayerCrawlActive(false);
@@ -183,21 +175,7 @@ function handlePrayerStart() {
         );
 
       case "prayer-chapel":
-        return (
-          <>
-            <h2>Capela de Orações</h2>
-
-            <p>
-              Em breve você poderá deixar aqui suas
-              intenções de oração para que outras pessoas
-              se unam a elas em oração.
-            </p>
-
-            <p className="coming-soon">
-              Em breve
-            </p>
-          </>
-        );
+        return <PrayerChapel />;
 
       case "miracles":
         return (
@@ -303,9 +281,11 @@ function handlePrayerStart() {
           CONTEÚDO PRINCIPAL
       ====================================================== */}
 
-      <div className="app-content">
+      <div 
+        className="app-content"
+        onClick={activePanel ? closePanel : undefined}
+      >
 
-        {/* A ORAÇÃO VISUAL É RENDERIZADA AQUI */}
         <PrayerCrawl
           active={prayerCrawlActive}
           runId={prayerCrawlRunId}
@@ -370,6 +350,10 @@ function handlePrayerStart() {
 
       </div>
 
+
+      {/* =====================================================
+          PAINEL
+      ====================================================== */}
 
       {/* =====================================================
           PAINEL
