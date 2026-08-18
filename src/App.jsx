@@ -1,4 +1,8 @@
-import { useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import PrayerChapel from "./components/chapel/PrayerChapel";
 import PrayerCrawl from "./components/prayer/PrayerCrawl";
@@ -8,6 +12,11 @@ import "./styles/globals.css";
 import WorldGlobe from "./components/globe/WorldGlobe";
 import PrayerForm from "./components/prayer/PrayerForm";
 import AudioControls from "./components/common/AudioControls";
+
+import ModeratorLogin from "./components/moderation/ModeratorLogin";
+import ModerationPanel from "./components/moderation/ModerationPanel";
+
+import { supabase } from "./lib/supabase";
 
 import {
   AboutIcon,
@@ -19,20 +28,146 @@ import {
 import useStats from "./hooks/useStats";
 import usePrayerMap from "./hooks/usePrayerMap";
 
-function App() {
-  const { stats, loading: statsLoading } = useStats();
-  const { points } = usePrayerMap();
 
-  const audioControlsRef = useRef(null);
+/* =========================================================
+   APLICAÇÃO DE MODERAÇÃO
+========================================================= */
 
-  const [prayerCrawlActive, setPrayerCrawlActive] =
-    useState(false);
-
-  const [prayerCrawlRunId, setPrayerCrawlRunId] =
-    useState(0);
-
-  const [activePanel, setActivePanel] =
+function ModerationApp() {
+  const [moderatorSession, setModeratorSession] =
     useState(null);
+
+  const [authLoading, setAuthLoading] =
+    useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (mounted) {
+        setModeratorSession(session);
+        setAuthLoading(false);
+      }
+    }
+
+    loadSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (mounted) {
+          setModeratorSession(session);
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  function handleModeratorLogin(session) {
+    setModeratorSession(session);
+  }
+
+  async function handleModeratorLogout() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error(
+        "Erro ao sair da moderação:",
+        error
+      );
+
+      return;
+    }
+
+    setModeratorSession(null);
+  }
+
+  if (authLoading) {
+    return (
+      <div className="moderation-page">
+        <p>Verificando sessão...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="moderation-page">
+
+      <header className="moderation-header">
+
+        <div>
+          <h1>Vox Orantis</h1>
+
+          <p>
+            Moderação da Capela de Orações
+          </p>
+        </div>
+
+        {moderatorSession && (
+          <button
+            type="button"
+            onClick={handleModeratorLogout}
+          >
+            Sair
+          </button>
+        )}
+
+      </header>
+
+      <main className="moderation-main">
+
+        {!moderatorSession ? (
+          <ModeratorLogin
+            onLogin={handleModeratorLogin}
+          />
+        ) : (
+          <ModerationPanel />
+        )}
+
+      </main>
+
+    </div>
+  );
+}
+
+
+/* =========================================================
+   APLICAÇÃO PÚBLICA
+========================================================= */
+
+function PublicApp() {
+  const { stats, loading: statsLoading } =
+    useStats();
+
+  const { points } =
+    usePrayerMap();
+
+  const audioControlsRef =
+    useRef(null);
+
+  const [
+    prayerCrawlActive,
+    setPrayerCrawlActive,
+  ] = useState(false);
+
+  const [
+    prayerCrawlRunId,
+    setPrayerCrawlRunId,
+  ] = useState(0);
+
+  const [
+    activePanel,
+    setActivePanel,
+  ] = useState(null);
 
   const menuItems = [
     {
@@ -223,10 +358,6 @@ function App() {
   return (
     <div className="app">
 
-      {/* =====================================================
-          MENU LATERAL
-      ====================================================== */}
-
       <aside className="side-menu">
 
         <div className="side-menu-logo">
@@ -276,14 +407,13 @@ function App() {
 
       </aside>
 
-
-      {/* =====================================================
-          CONTEÚDO PRINCIPAL
-      ====================================================== */}
-
-      <div 
+      <div
         className="app-content"
-        onClick={activePanel ? closePanel : undefined}
+        onClick={
+          activePanel
+            ? closePanel
+            : undefined
+        }
       >
 
         <PrayerCrawl
@@ -301,7 +431,6 @@ function App() {
 
         </header>
 
-
         <main className="app-main">
 
           <section className="globe-section">
@@ -310,13 +439,11 @@ function App() {
               <WorldGlobe points={points} />
             </div>
 
-
             <div className="prayer-layer">
               <PrayerForm
                 onPrayerStart={handlePrayerStart}
               />
             </div>
-
 
             <div className="stats-layer">
 
@@ -350,15 +477,6 @@ function App() {
 
       </div>
 
-
-      {/* =====================================================
-          PAINEL
-      ====================================================== */}
-
-      {/* =====================================================
-          PAINEL
-      ====================================================== */}
-
       {activePanel && (
         <div className="info-panel">
 
@@ -380,6 +498,22 @@ function App() {
 
     </div>
   );
+}
+
+
+/* =========================================================
+   SELETOR PRINCIPAL
+========================================================= */
+
+function App() {
+  const moderationMode =
+    window.location.pathname === "/moderation";
+
+  if (moderationMode) {
+    return <ModerationApp />;
+  }
+
+  return <PublicApp />;
 }
 
 export default App;
