@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { savePrayer } from "../services/prayerService";
 import useGeolocation from "./useGeolocation";
 
@@ -14,14 +19,26 @@ export const PRAYER_STATUS = {
 const PRAYER_COOLDOWN_MS = 10000;
 
 export default function usePrayer() {
-  const [nickname, setNickname] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState(PRAYER_STATUS.IDLE);
+  const [nickname, setNickname] =
+    useState("");
 
-  const submitLockRef = useRef(false);
-  const lastPrayerRef = useRef(0);
-  const cooldownTimerRef = useRef(null);
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState(null);
+
+  const [status, setStatus] =
+    useState(PRAYER_STATUS.IDLE);
+
+  const submitLockRef =
+    useRef(false);
+
+  const lastPrayerRef =
+    useRef(0);
+
+  const cooldownTimerRef =
+    useRef(null);
 
   const {
     getCurrentLocation,
@@ -30,18 +47,22 @@ export default function usePrayer() {
 
   function startCooldownTimer(remainingMs) {
     if (cooldownTimerRef.current) {
-      clearTimeout(cooldownTimerRef.current);
+      clearTimeout(
+        cooldownTimerRef.current
+      );
     }
 
-    cooldownTimerRef.current = setTimeout(() => {
-      setError(null);
-      setStatus(PRAYER_STATUS.IDLE);
+    cooldownTimerRef.current =
+      setTimeout(() => {
+        setError(null);
+        setStatus(PRAYER_STATUS.IDLE);
 
-      cooldownTimerRef.current = null;
-    }, remainingMs);
+        cooldownTimerRef.current = null;
+      }, remainingMs);
   }
 
   async function submitPrayer({
+    prayerType = "ave-maria",
     onAccepted,
   } = {}) {
     const now = Date.now();
@@ -62,15 +83,21 @@ export default function usePrayer() {
         PRAYER_COOLDOWN_MS - elapsed;
 
       const remainingSeconds =
-        Math.ceil(remainingMs / 1000);
+        Math.ceil(
+          remainingMs / 1000
+        );
 
       setError(
         `Sua oração já foi registrada. Aguarde ${remainingSeconds}s para oferecer outra.`
       );
 
-      setStatus(PRAYER_STATUS.COOLDOWN);
+      setStatus(
+        PRAYER_STATUS.COOLDOWN
+      );
 
-      startCooldownTimer(remainingMs);
+      startCooldownTimer(
+        remainingMs
+      );
 
       return false;
     }
@@ -78,36 +105,45 @@ export default function usePrayer() {
     submitLockRef.current = true;
 
     /*
-     * A oração foi aceita pelo frontend.
-     *
-     * Disparamos áudio + legenda aqui,
-     * ainda dentro do clique do usuário
-     * e antes da geolocalização assíncrona.
+     * O áudio e a legenda começam
+     * ainda no gesto do usuário.
      */
     onAccepted?.();
 
     setLoading(true);
     setError(null);
-    setStatus(PRAYER_STATUS.LOCATING);
+
+    setStatus(
+      PRAYER_STATUS.LOCATING
+    );
 
     try {
       const position =
         await getCurrentLocation();
 
-      setStatus(PRAYER_STATUS.SENDING);
+      setStatus(
+        PRAYER_STATUS.SENDING
+      );
 
       await savePrayer({
         nickname,
-        latitude: position.latitude,
-        longitude: position.longitude,
+        latitude:
+          position.latitude,
+        longitude:
+          position.longitude,
+        prayerType,
       });
 
-      lastPrayerRef.current = Date.now();
+      lastPrayerRef.current =
+        Date.now();
 
       setNickname("");
+
       resetLocation();
 
-      setStatus(PRAYER_STATUS.SUCCESS);
+      setStatus(
+        PRAYER_STATUS.SUCCESS
+      );
 
       return true;
     } catch (err) {
@@ -122,7 +158,9 @@ export default function usePrayer() {
           "Sua oração já foi registrada. Aguarde alguns segundos para oferecer outra."
         );
 
-        setStatus(PRAYER_STATUS.COOLDOWN);
+        setStatus(
+          PRAYER_STATUS.COOLDOWN
+        );
 
         startCooldownTimer(
           PRAYER_COOLDOWN_MS
@@ -136,18 +174,24 @@ export default function usePrayer() {
           "Erro ao enviar oração."
       );
 
-      setStatus(PRAYER_STATUS.ERROR);
+      setStatus(
+        PRAYER_STATUS.ERROR
+      );
 
       return false;
     } finally {
       setLoading(false);
-      submitLockRef.current = false;
+
+      submitLockRef.current =
+        false;
     }
   }
 
   useEffect(() => {
     return () => {
-      if (cooldownTimerRef.current) {
+      if (
+        cooldownTimerRef.current
+      ) {
         clearTimeout(
           cooldownTimerRef.current
         );
@@ -162,6 +206,7 @@ export default function usePrayer() {
     error,
     status,
     submitPrayer,
-    prayerStatus: PRAYER_STATUS,
+    prayerStatus:
+      PRAYER_STATUS,
   };
 }

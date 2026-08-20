@@ -5,7 +5,10 @@ import {
 } from "react";
 
 import PrayerChapel from "./components/chapel/PrayerChapel";
+import PrayerLibrary from "./components/prayers/PrayerLibrary";
 import PrayerCrawl from "./components/prayer/PrayerCrawl";
+
+import MiracleChapel from "./components/chapel/MiracleChapel";
 
 import "./styles/globals.css";
 
@@ -101,9 +104,7 @@ function ModerationApp() {
 
   return (
     <div className="moderation-page">
-
       <header className="moderation-header">
-
         <div>
           <h1>Vox Orantis</h1>
 
@@ -120,11 +121,9 @@ function ModerationApp() {
             Sair
           </button>
         )}
-
       </header>
 
       <main className="moderation-main">
-
         {!moderatorSession ? (
           <ModeratorLogin
             onLogin={handleModeratorLogin}
@@ -132,9 +131,7 @@ function ModerationApp() {
         ) : (
           <ModerationPanel />
         )}
-
       </main>
-
     </div>
   );
 }
@@ -163,6 +160,11 @@ function PublicApp() {
     prayerCrawlRunId,
     setPrayerCrawlRunId,
   ] = useState(0);
+
+  const [
+    activePrayer,
+    setActivePrayer,
+  ] = useState(null);
 
   const [
     activePanel,
@@ -200,18 +202,34 @@ function PublicApp() {
     setActivePanel(item.id);
   }
 
-  function handlePrayerStart() {
+  function handlePrayerStart(prayer = null) {
     setPrayerCrawlRunId(
       (current) => current + 1
     );
 
+    setActivePrayer(prayer);
     setPrayerCrawlActive(true);
+
+    if (prayer) {
+      audioControlsRef.current?.startPrayer({
+        audio: prayer.audio,
+        title: prayer.title,
+      });
+
+      return;
+    }
 
     audioControlsRef.current?.startPrayer();
   }
 
+  function handleLibraryPrayerStart(prayer) {
+    closePanel();
+    handlePrayerStart(prayer);
+  }
+
   function handlePrayerAudioEnd() {
     setPrayerCrawlActive(false);
+    setActivePrayer(null);
   }
 
   function closePanel() {
@@ -313,41 +331,13 @@ function PublicApp() {
         return <PrayerChapel />;
 
       case "miracles":
-        return (
-          <>
-            <h2>Capela de Milagres</h2>
-
-            <p>
-              Um espaço para compartilhar graças alcançadas
-              e testemunhos de fé.
-            </p>
-
-            <p className="coming-soon">
-              Em breve
-            </p>
-          </>
-        );
+        return <MiracleChapel />;
 
       case "other-prayers":
         return (
-          <>
-            <h2>Outras Orações</h2>
-
-            <p>
-              O Vox Orantis continuará crescendo com novas
-              orações e páginas dedicadas a diferentes
-              devoções.
-            </p>
-
-            <p>
-              Todas elas continuarão fazendo parte do mesmo
-              propósito: unir o mundo através da oração.
-            </p>
-
-            <p className="coming-soon">
-              Em breve
-            </p>
-          </>
+          <PrayerLibrary
+            onOfferPrayer={handleLibraryPrayerStart}
+          />
         );
 
       default:
@@ -357,9 +347,7 @@ function PublicApp() {
 
   return (
     <div className="app">
-
       <aside className="side-menu">
-
         <div className="side-menu-logo">
           VO
         </div>
@@ -404,7 +392,6 @@ function PublicApp() {
             onPrayerEnd={handlePrayerAudioEnd}
           />
         </div>
-
       </aside>
 
       <div
@@ -415,26 +402,22 @@ function PublicApp() {
             : undefined
         }
       >
-
         <PrayerCrawl
           active={prayerCrawlActive}
           runId={prayerCrawlRunId}
+          lines={activePrayer?.crawl}
         />
 
         <header className="app-header">
-
           <h1>Vox Orantis</h1>
 
           <p className="app-slogan">
             Unindo o mundo em oração
           </p>
-
         </header>
 
         <main className="app-main">
-
           <section className="globe-section">
-
             <div className="globe-layer">
               <WorldGlobe points={points} />
             </div>
@@ -446,7 +429,6 @@ function PublicApp() {
             </div>
 
             <div className="stats-layer">
-
               {statsLoading ? (
                 <p>
                   Carregando estatísticas...
@@ -468,18 +450,13 @@ function PublicApp() {
                   </p>
                 </>
               )}
-
             </div>
-
           </section>
-
         </main>
-
       </div>
 
       {activePanel && (
         <div className="info-panel">
-
           <button
             type="button"
             className="info-panel-close"
@@ -492,10 +469,8 @@ function PublicApp() {
           <div className="info-panel-content">
             {renderPanelContent()}
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

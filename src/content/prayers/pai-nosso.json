@@ -1,0 +1,17 @@
+{
+  "id": "pai-nosso",
+  "title": "Pai-Nosso",
+  "subtitle": "A oração ensinada por Jesus",
+  "text": "Pai nosso que estais nos céus,\nsantificado seja o vosso nome.\n\nVenha a nós o vosso reino,\nseja feita a vossa vontade,\nassim na terra como no céu.\n\nO pão nosso de cada dia nos dai hoje.\nPerdoai-nos as nossas ofensas,\nassim como nós perdoamos\na quem nos tem ofendido.\n\nE não nos deixeis cair em tentação,\nmas livrai-nos do mal.\n\nAmém.",
+  "crawl": [
+    "Pai nosso que estais nos céus, santificado seja o vosso nome.",
+    "Venha a nós o vosso reino, seja feita a vossa vontade, assim na terra como no céu.",
+    "O pão nosso de cada dia nos dai hoje.",
+    "Perdoai-nos as nossas ofensas, assim como nós perdoamos a quem nos tem ofendido.",
+    "E não nos deixeis cair em tentação, mas livrai-nos do mal."
+  ],
+  "audio": "/audio/prayers/pai-nosso.mp3",
+  "order": 1,
+  "active": true,
+  "offerable": true
+}

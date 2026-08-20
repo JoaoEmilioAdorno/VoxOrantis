@@ -9,10 +9,13 @@ export default function PrayerChapel() {
   const [formOpen, setFormOpen] = useState(false);
 
   const [nickname, setNickname] = useState("");
+
   const [requestText, setRequestText] = useState("");
 
   const [submitted, setSubmitted] = useState(false);
+
   const [submitting, setSubmitting] = useState(false);
+
   const [submitError, setSubmitError] = useState(null);
 
   const [prayerRequests, setPrayerRequests] =
@@ -107,14 +110,12 @@ export default function PrayerChapel() {
   if (formOpen) {
     return (
       <section className="prayer-chapel">
-
         <header className="prayer-chapel-header">
           <h2>Capela de Orações</h2>
         </header>
 
         {!submitted ? (
           <div className="prayer-request-form-wrapper">
-
             <form
               className="prayer-request-form"
               onSubmit={handleSubmit}
@@ -179,7 +180,6 @@ export default function PrayerChapel() {
               )}
 
               <div className="prayer-request-form-actions">
-
                 <button
                   type="button"
                   className="chapel-cancel-button"
@@ -201,17 +201,12 @@ export default function PrayerChapel() {
                     ? "Enviando..."
                     : "Enviar pedido"}
                 </button>
-
               </div>
-
             </form>
-
           </div>
         ) : (
           <div className="prayer-request-form-wrapper">
-
             <div className="prayer-request-confirmation">
-
               <div
                 className="prayer-request-confirmation-icon"
                 aria-hidden="true"
@@ -233,12 +228,9 @@ export default function PrayerChapel() {
               >
                 Voltar para a Capela
               </button>
-
             </div>
-
           </div>
         )}
-
       </section>
     );
   }
@@ -251,9 +243,7 @@ export default function PrayerChapel() {
 
   return (
     <section className="prayer-chapel">
-
       <header className="prayer-chapel-header">
-
         <h2>Capela de Orações</h2>
 
         <blockquote className="prayer-chapel-verse">
@@ -265,7 +255,6 @@ export default function PrayerChapel() {
           Um espaço para confiar suas intenções à oração
           da comunidade Vox Orantis.
         </p>
-
       </header>
 
       <button
@@ -279,7 +268,6 @@ export default function PrayerChapel() {
       <div className="prayer-chapel-divider" />
 
       <section className="prayer-chapel-requests">
-
         <h3>Intenções de oração</h3>
 
         <p className="prayer-chapel-community-message">
@@ -311,13 +299,11 @@ export default function PrayerChapel() {
           !requestsError &&
           prayerRequests.length > 0 && (
             <div className="prayer-request-list">
-
               {prayerRequests.map((request) => (
                 <article
                   key={request.id}
                   className="prayer-request-card"
                 >
-
                   <span
                     className="prayer-request-symbol"
                     aria-hidden="true"
@@ -326,7 +312,6 @@ export default function PrayerChapel() {
                   </span>
 
                   <div>
-
                     <p className="prayer-request-text">
                       {request.text}
                     </p>
@@ -334,31 +319,17 @@ export default function PrayerChapel() {
                     <p className="prayer-request-author">
                       — {request.nickname}
                     </p>
-
                   </div>
-
                 </article>
               ))}
-
             </div>
           )}
-
       </section>
-
-      {prayerRequests.length > 0 && (
-        <button
-          type="button"
-          className="chapel-secondary-button"
-        >
-          Rezar por estas intenções
-        </button>
-      )}
 
       <p className="prayer-chapel-moderation-note">
         Todos os pedidos passam por moderação antes
         de serem publicados.
       </p>
-
     </section>
   );
 }

@@ -1668,4 +1668,62 @@ p {
       opacity: 0;
     }
   }
+
+/* =========================================================
+   BIBLIOTECA DE ORAÇÕES
+========================================================= */
+
+.prayer-library-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 16px 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  color: inherit;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.prayer-library-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.prayer-library-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.prayer-library-card p {
+  margin: 0;
+  opacity: 0.75;
+}
+
+.prayer-library-viewer {
+  margin: 20px 0 26px;
+}
+
+.prayer-library-text {
+  white-space: pre-line;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+.prayer-library-audio {
+  width: 100%;
+  margin: 24px 0;
+}
+
 }

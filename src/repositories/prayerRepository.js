@@ -1,25 +1,40 @@
 import { supabase } from "../lib/supabase";
 
-const DEVICE_ID_KEY = "vox_orantis_device_id";
+const DEVICE_ID_KEY =
+  "vox_orantis_device_id";
 
 function getAnonymousDeviceId() {
-  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+  let deviceId =
+    localStorage.getItem(
+      DEVICE_ID_KEY
+    );
 
   if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem(DEVICE_ID_KEY, deviceId);
+    deviceId =
+      crypto.randomUUID();
+
+    localStorage.setItem(
+      DEVICE_ID_KEY,
+      deviceId
+    );
   }
 
   return deviceId;
 }
 
 export async function getActivePrayers() {
-  const { data, error } = await supabase
-    .from("public_active_prayers")
-    .select(
-      "id, latitude, longitude, created_at, expires_at"
-    )
-    .order("created_at", { ascending: true });
+  const { data, error } =
+    await supabase
+      .from(
+        "public_active_prayers"
+      )
+      .select(
+        "id, latitude, longitude, created_at, expires_at"
+      )
+      .order(
+        "created_at",
+        { ascending: true }
+      );
 
   if (error) {
     throw error;
@@ -32,18 +47,23 @@ export async function createPrayer({
   latitude,
   longitude,
   nickname,
+  prayerType = "ave-maria",
 }) {
-  const deviceId = getAnonymousDeviceId();
+  const deviceId =
+    getAnonymousDeviceId();
 
-  const { data, error } = await supabase.rpc(
-    "create_prayer",
-    {
-      p_latitude: latitude,
-      p_longitude: longitude,
-      p_nickname: nickname,
-      p_device_id: deviceId,
-    }
-  );
+  const { data, error } =
+    await supabase.rpc(
+      "create_prayer",
+      {
+        p_latitude: latitude,
+        p_longitude: longitude,
+        p_nickname: nickname,
+        p_device_id: deviceId,
+        p_prayer_type:
+          prayerType,
+      }
+    );
 
   if (error) {
     throw error;

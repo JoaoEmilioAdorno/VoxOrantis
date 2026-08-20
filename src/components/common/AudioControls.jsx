@@ -28,10 +28,12 @@ const AudioControls = forwardRef(
     const [prayerMuted, setPrayerMuted] =
       useState(false);
 
+    const [currentPrayerTitle, setCurrentPrayerTitle] =
+      useState("Ave Maria");
+
     useEffect(() => {
       if (backgroundRef.current) {
-        backgroundRef.current.volume =
-          0.18;
+        backgroundRef.current.volume = 0.18;
       }
 
       if (prayerRef.current) {
@@ -39,19 +41,25 @@ const AudioControls = forwardRef(
       }
     }, []);
 
-    async function startPrayer() {
+    async function startPrayer({
+      audio = aveMariaAudio,
+      title = "Ave Maria",
+    } = {}) {
       const prayer = prayerRef.current;
-      const background =
-        backgroundRef.current;
+      const background = backgroundRef.current;
 
       if (!prayer || prayerPlaying) {
         return;
       }
 
       try {
+        prayer.pause();
+
+        prayer.src = audio;
         prayer.currentTime = 0;
         prayer.volume = 0.8;
 
+        setCurrentPrayerTitle(title);
         setPrayerMuted(false);
 
         if (
@@ -61,9 +69,6 @@ const AudioControls = forwardRef(
           background.volume = 0.06;
         }
 
-        /*
-         * Nunca pausamos esta oração.
-         */
         const playPromise = prayer.play();
 
         setPrayerPlaying(true);
@@ -73,7 +78,7 @@ const AudioControls = forwardRef(
         setPrayerPlaying(false);
 
         console.error(
-          "Não foi possível reproduzir a Ave Maria:",
+          `Não foi possível reproduzir ${title}:`,
           error
         );
       }
@@ -123,10 +128,6 @@ const AudioControls = forwardRef(
         prayer.volume = 0.8;
         setPrayerMuted(false);
       } else {
-        /*
-         * Importante:
-         * volume zero, mas NÃO pause.
-         */
         prayer.volume = 0;
         setPrayerMuted(true);
       }
@@ -204,14 +205,14 @@ const AudioControls = forwardRef(
           disabled={!prayerPlaying}
           title={
             !prayerPlaying
-              ? "A Ave Maria começa ao oferecer uma oração"
+              ? "A oração começa ao ser oferecida"
               : prayerMuted
                 ? "Ouvir a oração"
                 : "Silenciar a oração"
           }
           aria-label={
             !prayerPlaying
-              ? "A Ave Maria começa ao oferecer uma oração"
+              ? "A oração começa ao ser oferecida"
               : prayerMuted
                 ? "Ouvir a oração"
                 : "Silenciar a oração"
@@ -227,8 +228,8 @@ const AudioControls = forwardRef(
             {prayerPlaying
               ? prayerMuted
                 ? "Ouvir oração"
-                : "Silenciar oração"
-              : "Som da Ave Maria"}
+                : `Silenciar ${currentPrayerTitle}`
+              : "Som da oração"}
           </span>
         </button>
       </div>
