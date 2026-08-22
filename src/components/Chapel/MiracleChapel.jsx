@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import {
+  submitMiracleRequest,
+  loadApprovedMiracleRequests,
+} from "../../services/miracleRequestService";
 
 export default function MiracleChapel() {
   const [formOpen, setFormOpen] = useState(false);
@@ -8,33 +13,81 @@ export default function MiracleChapel() {
 
   const [submitted, setSubmitted] = useState(false);
 
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const [testimonies, setTestimonies] = useState([]);
+  const [loadingTestimonies, setLoadingTestimonies] =
+    useState(true);
+
+  useEffect(() => {
+    async function loadTestimonies() {
+      try {
+        const data =
+          await loadApprovedMiracleRequests();
+
+        setTestimonies(data);
+      } catch (error) {
+        console.error(
+          "Erro ao carregar testemunhos:",
+          error
+        );
+      } finally {
+        setLoadingTestimonies(false);
+      }
+    }
+
+    loadTestimonies();
+  }, []);
+
   function handleOpenForm() {
     setSubmitted(false);
+    setSubmitError("");
     setFormOpen(true);
   }
 
   function handleBackToChapel() {
     setFormOpen(false);
     setSubmitted(false);
+
     setNickname("");
     setTestimonyText("");
+    setSubmitError("");
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     if (!testimonyText.trim()) {
       return;
     }
 
-    /*
-     * Integração com Supabase será adicionada
-     * quando a conexão com o projeto estiver normalizada.
-     */
+    setSubmitting(true);
+    setSubmitError("");
 
-    setSubmitted(true);
-    setNickname("");
-    setTestimonyText("");
+    try {
+      await submitMiracleRequest({
+        nickname,
+        testimonyText,
+      });
+
+      setSubmitted(true);
+
+      setNickname("");
+      setTestimonyText("");
+    } catch (error) {
+      console.error(
+        "Erro ao enviar testemunho:",
+        error
+      );
+
+      setSubmitError(
+        error?.message ||
+          "Não foi possível enviar o testemunho."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   /*
@@ -56,7 +109,9 @@ export default function MiracleChapel() {
               className="prayer-request-form"
               onSubmit={handleSubmit}
             >
-              <h3>Compartilhe uma graça alcançada</h3>
+              <h3>
+                Compartilhe uma graça alcançada
+              </h3>
 
               <p className="prayer-request-form-intro">
                 Conte brevemente a graça que deseja
@@ -92,7 +147,9 @@ export default function MiracleChapel() {
                 id="miracle-testimony"
                 value={testimonyText}
                 onChange={(event) =>
-                  setTestimonyText(event.target.value)
+                  setTestimonyText(
+                    event.target.value
+                  )
                 }
                 maxLength={1000}
                 rows={9}
@@ -109,11 +166,18 @@ export default function MiracleChapel() {
                 e-mail ou outros dados pessoais.
               </p>
 
+              {submitError && (
+                <p className="prayer-request-error">
+                  {submitError}
+                </p>
+              )}
+
               <div className="prayer-request-form-actions">
                 <button
                   type="button"
                   className="chapel-cancel-button"
                   onClick={handleBackToChapel}
+                  disabled={submitting}
                 >
                   Cancelar
                 </button>
@@ -121,9 +185,14 @@ export default function MiracleChapel() {
                 <button
                   type="submit"
                   className="chapel-primary-button"
-                  disabled={!testimonyText.trim()}
+                  disabled={
+                    submitting ||
+                    !testimonyText.trim()
+                  }
                 >
-                  Enviar testemunho
+                  {submitting
+                    ? "Enviando..."
+                    : "Enviar testemunho"}
                 </button>
               </div>
             </form>
@@ -138,11 +207,14 @@ export default function MiracleChapel() {
                 🙏
               </div>
 
-              <h3>Seu testemunho foi recebido.</h3>
+              <h3>
+                Seu testemunho foi recebido.
+              </h3>
 
               <p>
-                Ele será encaminhado para moderação
-                antes de ser publicado na Capela de Milagres.
+                Ele será encaminhado para
+                moderação antes de ser publicado
+                na Capela de Milagres.
               </p>
 
               <button
@@ -171,13 +243,14 @@ export default function MiracleChapel() {
         <h2>Capela de Milagres</h2>
 
         <blockquote className="prayer-chapel-verse">
-          “Grandes coisas fez por mim o Todo-Poderoso.”
+          “Grandes coisas fez por mim o
+          Todo-Poderoso.”
           <span>Lucas 1,49</span>
         </blockquote>
 
         <p className="prayer-chapel-intro">
-          Um espaço para compartilhar graças alcançadas
-          e testemunhos de fé.
+          Um espaço para compartilhar graças
+          alcançadas e testemunhos de fé.
         </p>
       </header>
 
@@ -199,14 +272,36 @@ export default function MiracleChapel() {
           serão compartilhados neste espaço.
         </p>
 
-        <p className="prayer-chapel-empty">
-          Ainda não há testemunhos publicados nesta capela.
-        </p>
+        {loadingTestimonies ? (
+          <p className="prayer-chapel-empty">
+            Carregando testemunhos...
+          </p>
+        ) : testimonies.length === 0 ? (
+          <p className="prayer-chapel-empty">
+            Ainda não há testemunhos publicados
+            nesta capela.
+          </p>
+        ) : (
+          <div className="prayer-chapel-request-list">
+            {testimonies.map((testimony) => (
+              <article
+                key={testimony.id}
+                className="prayer-chapel-request-card"
+              >
+                <p>{testimony.text}</p>
+
+                <span>
+                  — {testimony.nickname}
+                </span>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <p className="prayer-chapel-moderation-note">
-        Todos os testemunhos passam por moderação antes
-        de serem publicados.
+        Todos os testemunhos passam por moderação
+        antes de serem publicados.
       </p>
     </section>
   );

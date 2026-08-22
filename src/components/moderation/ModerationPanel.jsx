@@ -1,31 +1,55 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   loadPendingPrayerRequests,
   approvePendingPrayerRequest,
   rejectPendingPrayerRequest,
+  loadPendingMiracleRequests,
+  approvePendingMiracleRequest,
+  rejectPendingMiracleRequest,
 } from "../../services/moderationService";
 
 export default function ModerationPanel() {
-  const [requests, setRequests] = useState([]);
+  const [activeTab, setActiveTab] =
+    useState("prayers");
+
+  const [prayerRequests, setPrayerRequests] =
+    useState([]);
+
+  const [miracleRequests, setMiracleRequests] =
+    useState([]);
+
   const [loading, setLoading] = useState(true);
-  const [processingId, setProcessingId] = useState(null);
+
+  const [processingId, setProcessingId] =
+    useState(null);
+
   const [error, setError] = useState("");
 
   const loadRequests = useCallback(async () => {
     setError("");
 
     try {
-      const data = await loadPendingPrayerRequests();
-      setRequests(data);
+      const [prayerData, miracleData] =
+        await Promise.all([
+          loadPendingPrayerRequests(),
+          loadPendingMiracleRequests(),
+        ]);
+
+      setPrayerRequests(prayerData);
+      setMiracleRequests(miracleData);
     } catch (err) {
       console.error(
-        "Erro ao carregar pedidos para moderação:",
+        "Erro ao carregar itens para moderação:",
         err
       );
 
       setError(
-        "Não foi possível carregar os pedidos de oração."
+        "Não foi possível carregar os itens para moderação."
       );
     } finally {
       setLoading(false);
@@ -36,7 +60,7 @@ export default function ModerationPanel() {
     loadRequests();
   }, [loadRequests]);
 
-  async function handleApprove(requestId) {
+  async function handleApprovePrayer(requestId) {
     setProcessingId(requestId);
     setError("");
 
@@ -45,19 +69,19 @@ export default function ModerationPanel() {
       await loadRequests();
     } catch (err) {
       console.error(
-        "Erro ao aprovar pedido:",
+        "Erro ao aprovar pedido de oração:",
         err
       );
 
       setError(
-        "Não foi possível aprovar o pedido."
+        "Não foi possível aprovar o pedido de oração."
       );
     } finally {
       setProcessingId(null);
     }
   }
 
-  async function handleReject(requestId) {
+  async function handleRejectPrayer(requestId) {
     setProcessingId(requestId);
     setError("");
 
@@ -66,29 +90,102 @@ export default function ModerationPanel() {
       await loadRequests();
     } catch (err) {
       console.error(
-        "Erro ao rejeitar pedido:",
+        "Erro ao rejeitar pedido de oração:",
         err
       );
 
       setError(
-        "Não foi possível rejeitar o pedido."
+        "Não foi possível rejeitar o pedido de oração."
       );
     } finally {
       setProcessingId(null);
     }
   }
 
+  async function handleApproveMiracle(requestId) {
+    setProcessingId(requestId);
+    setError("");
+
+    try {
+      await approvePendingMiracleRequest(requestId);
+      await loadRequests();
+    } catch (err) {
+      console.error(
+        "Erro ao aprovar testemunho:",
+        err
+      );
+
+      setError(
+        "Não foi possível aprovar o testemunho."
+      );
+    } finally {
+      setProcessingId(null);
+    }
+  }
+
+  async function handleRejectMiracle(requestId) {
+    setProcessingId(requestId);
+    setError("");
+
+    try {
+      await rejectPendingMiracleRequest(requestId);
+      await loadRequests();
+    } catch (err) {
+      console.error(
+        "Erro ao rejeitar testemunho:",
+        err
+      );
+
+      setError(
+        "Não foi possível rejeitar o testemunho."
+      );
+    } finally {
+      setProcessingId(null);
+    }
+  }
+
+  function formatDate(createdAt) {
+    if (!createdAt) {
+      return "";
+    }
+
+    return new Intl.DateTimeFormat("pt-BR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(new Date(createdAt));
+  }
+
   if (loading) {
     return (
       <div className="moderation-panel">
-        <p>Carregando pedidos...</p>
+        <div className="moderation-loading">
+          <p>Carregando moderação...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="moderation-panel">
-      <h2>Pedidos aguardando moderação</h2>
+      <header className="moderation-header">
+        <div>
+          <h2>Moderação</h2>
+
+          <p>
+            Revise os conteúdos enviados antes
+            da publicação.
+          </p>
+        </div>
+
+        <div className="moderation-total">
+          <strong>
+            {prayerRequests.length +
+              miracleRequests.length}
+          </strong>
+
+          <span>pendentes</span>
+        </div>
+      </header>
 
       {error && (
         <p className="moderation-error">
@@ -96,59 +193,252 @@ export default function ModerationPanel() {
         </p>
       )}
 
-      {requests.length === 0 ? (
-        <p>
-          Não existem pedidos aguardando moderação.
-        </p>
-      ) : (
-        <div className="moderation-list">
-          {requests.map((request) => (
-            <article
-              key={request.id}
-              className="moderation-request"
-            >
-              <p className="moderation-request-text">
-                {request.request_text}
-              </p>
+      <div
+        className="moderation-tabs"
+        role="tablist"
+        aria-label="Tipos de conteúdo"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={
+            activeTab === "prayers"
+          }
+          className={
+            activeTab === "prayers"
+              ? "moderation-tab active"
+              : "moderation-tab"
+          }
+          onClick={() =>
+            setActiveTab("prayers")
+          }
+        >
+          <span>Pedidos de oração</span>
 
-              {request.nickname && (
-                <p className="moderation-request-nickname">
-                  — {request.nickname}
-                </p>
-              )}
+          <strong>
+            {prayerRequests.length}
+          </strong>
+        </button>
 
-              <div className="moderation-actions">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleApprove(request.id)
-                  }
-                  disabled={
-                    processingId === request.id
-                  }
-                >
-                  {processingId === request.id
-                    ? "Processando..."
-                    : "Aprovar"}
-                </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={
+            activeTab === "miracles"
+          }
+          className={
+            activeTab === "miracles"
+              ? "moderation-tab active"
+              : "moderation-tab"
+          }
+          onClick={() =>
+            setActiveTab("miracles")
+          }
+        >
+          <span>Testemunhos</span>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleReject(request.id)
-                  }
-                  disabled={
-                    processingId === request.id
-                  }
-                >
-                  {processingId === request.id
-                    ? "Processando..."
-                    : "Rejeitar"}
-                </button>
+          <strong>
+            {miracleRequests.length}
+          </strong>
+        </button>
+      </div>
+
+      {activeTab === "prayers" && (
+        <section className="moderation-section">
+          <div className="moderation-section-header">
+            <h3>Pedidos de oração</h3>
+
+            <span>
+              {prayerRequests.length} aguardando
+            </span>
+          </div>
+
+          {prayerRequests.length === 0 ? (
+            <div className="moderation-empty">
+              <div
+                className="moderation-empty-icon"
+                aria-hidden="true"
+              >
+                ✓
               </div>
-            </article>
-          ))}
-        </div>
+
+              <h4>Nenhum pedido pendente</h4>
+
+              <p>
+                Todos os pedidos de oração foram
+                revisados.
+              </p>
+            </div>
+          ) : (
+            <div className="moderation-list">
+              {prayerRequests.map((request) => (
+                <article
+                  key={request.id}
+                  className="moderation-request"
+                >
+                  <div className="moderation-request-meta">
+                    <span>
+                      Pedido de oração
+                    </span>
+
+                    <time>
+                      {formatDate(
+                        request.created_at
+                      )}
+                    </time>
+                  </div>
+
+                  <p className="moderation-request-text">
+                    {request.request_text}
+                  </p>
+
+                  <p className="moderation-request-nickname">
+                    —{" "}
+                    {request.nickname?.trim() ||
+                      "Anônimo"}
+                  </p>
+
+                  <div className="moderation-actions">
+                    <button
+                      type="button"
+                      className="moderation-reject-button"
+                      onClick={() =>
+                        handleRejectPrayer(
+                          request.id
+                        )
+                      }
+                      disabled={
+                        processingId ===
+                        request.id
+                      }
+                    >
+                      {processingId === request.id
+                        ? "Processando..."
+                        : "Rejeitar"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="moderation-approve-button"
+                      onClick={() =>
+                        handleApprovePrayer(
+                          request.id
+                        )
+                      }
+                      disabled={
+                        processingId ===
+                        request.id
+                      }
+                    >
+                      {processingId === request.id
+                        ? "Processando..."
+                        : "Aprovar"}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {activeTab === "miracles" && (
+        <section className="moderation-section">
+          <div className="moderation-section-header">
+            <h3>Testemunhos de graças</h3>
+
+            <span>
+              {miracleRequests.length} aguardando
+            </span>
+          </div>
+
+          {miracleRequests.length === 0 ? (
+            <div className="moderation-empty">
+              <div
+                className="moderation-empty-icon"
+                aria-hidden="true"
+              >
+                ✓
+              </div>
+
+              <h4>Nenhum testemunho pendente</h4>
+
+              <p>
+                Todos os testemunhos foram
+                revisados.
+              </p>
+            </div>
+          ) : (
+            <div className="moderation-list">
+              {miracleRequests.map((request) => (
+                <article
+                  key={request.id}
+                  className="moderation-request"
+                >
+                  <div className="moderation-request-meta">
+                    <span>
+                      Testemunho
+                    </span>
+
+                    <time>
+                      {formatDate(
+                        request.created_at
+                      )}
+                    </time>
+                  </div>
+
+                  <p className="moderation-request-text">
+                    {request.testimony_text}
+                  </p>
+
+                  <p className="moderation-request-nickname">
+                    —{" "}
+                    {request.nickname?.trim() ||
+                      "Anônimo"}
+                  </p>
+
+                  <div className="moderation-actions">
+                    <button
+                      type="button"
+                      className="moderation-reject-button"
+                      onClick={() =>
+                        handleRejectMiracle(
+                          request.id
+                        )
+                      }
+                      disabled={
+                        processingId ===
+                        request.id
+                      }
+                    >
+                      {processingId === request.id
+                        ? "Processando..."
+                        : "Rejeitar"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="moderation-approve-button"
+                      onClick={() =>
+                        handleApproveMiracle(
+                          request.id
+                        )
+                      }
+                      disabled={
+                        processingId ===
+                        request.id
+                      }
+                    >
+                      {processingId === request.id
+                        ? "Processando..."
+                        : "Aprovar"}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
       )}
     </div>
   );

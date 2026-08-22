@@ -26,6 +26,7 @@ import {
   PrayerIcon,
   MiracleIcon,
   OtherPrayersIcon,
+  ModerationIcon,
 } from "./components/common/MenuIcons";
 
 import useStats from "./hooks/useStats";
@@ -35,7 +36,6 @@ import usePrayerMap from "./hooks/usePrayerMap";
 /* =========================================================
    APLICAÇÃO DE MODERAÇÃO
 ========================================================= */
-
 function ModerationApp() {
   const [moderatorSession, setModeratorSession] =
     useState(null);
@@ -104,12 +104,23 @@ function ModerationApp() {
 
   return (
     <div className="moderation-page">
+      <button
+        type="button"
+        className="moderation-back-link"
+        onClick={() => {
+          window.location.href = "/";
+        }}
+      >
+        <span aria-hidden="true">←</span>
+        Voltar ao Vox Orantis
+      </button>
+
       <header className="moderation-header">
         <div>
           <h1>Vox Orantis</h1>
 
           <p>
-            Moderação da Capela de Orações
+            Moderação das Capelas
           </p>
         </div>
 
@@ -196,11 +207,22 @@ function PublicApp() {
       label: "Outras Orações",
       available: false,
     },
+    {
+      id: "moderation",
+      icon: ModerationIcon,
+      label: "Moderação",
+      available: true,
+    },
   ];
 
   function handleMenuClick(item) {
-    setActivePanel(item.id);
+  if (item.id === "moderation") {
+    window.location.href = "/moderation";
+    return;
   }
+
+  setActivePanel(item.id);
+}
 
   function handlePrayerStart(prayer = null) {
     setPrayerCrawlRunId(

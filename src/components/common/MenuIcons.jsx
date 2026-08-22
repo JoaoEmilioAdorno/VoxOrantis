@@ -34,10 +34,8 @@ export function PrayerIcon() {
     >
       <path d="M9 4v5" />
       <path d="M15 4v5" />
-
       <path d="M9 9c-1.7 0-3 1.3-3 3v2.5c0 1.2.5 2.3 1.4 3.1L12 21" />
       <path d="M15 9c1.7 0 3 1.3 3 3v2.5c0 1.2-.5 2.3-1.4 3.1L12 21" />
-
       <path d="M9 9l3 4" />
       <path d="M15 9l-3 4" />
     </svg>
@@ -59,9 +57,7 @@ export function MiracleIcon() {
       aria-hidden="true"
     >
       <path d="M12 3l1.2 4.1L17 8.5l-3.8 1.4L12 14l-1.2-4.1L7 8.5l3.8-1.4L12 3z" />
-
       <path d="M18.5 14l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7.7-2.3z" />
-
       <path d="M5.5 13l.6 1.8 1.9.7-1.9.6-.6 1.9-.6-1.9-1.9-.6 1.9-.7.6-1.8z" />
     </svg>
   );
@@ -83,6 +79,26 @@ export function OtherPrayersIcon() {
     >
       <path d="M12 3v18" />
       <path d="M7 8h10" />
+    </svg>
+  );
+}
+
+
+export function ModerationIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 3l7 3v5c0 4.6-2.8 8.2-7 10-4.2-1.8-7-5.4-7-10V6l7-3z" />
+      <path d="M9 12l2 2 4-4" />
     </svg>
   );
 }
