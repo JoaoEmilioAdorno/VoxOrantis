@@ -8,6 +8,10 @@ const prayerModules = import.meta.glob(
 
 const prayers = Object.values(prayerModules)
   .filter((prayer) => prayer.active !== false)
+  .map((prayer) => ({
+    ...prayer,
+    source: "static",
+  }))
   .sort(
     (a, b) =>
       (a.order ?? 999) - (b.order ?? 999)

@@ -6,6 +6,7 @@ import {
 
 import PrayerChapel from "./components/chapel/PrayerChapel";
 import PrayerLibrary from "./components/prayers/PrayerLibrary";
+import PrayerSuggestionForm from "./components/prayers/PrayerSuggestionForm";
 import PrayerCrawl from "./components/prayer/PrayerCrawl";
 
 import MiracleChapel from "./components/chapel/MiracleChapel";
@@ -26,6 +27,7 @@ import {
   PrayerIcon,
   MiracleIcon,
   OtherPrayersIcon,
+  SuggestPrayerIcon,
   ModerationIcon,
 } from "./components/common/MenuIcons";
 
@@ -161,6 +163,15 @@ function PublicApp() {
 
   const audioControlsRef =
     useRef(null);
+  const crawlTimerRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (crawlTimerRef.current) {
+        window.clearTimeout(crawlTimerRef.current);
+      }
+    };
+  }, []);
 
   const [
     prayerCrawlActive,
@@ -208,6 +219,12 @@ function PublicApp() {
       available: false,
     },
     {
+      id: "suggest-prayer",
+      icon: SuggestPrayerIcon,
+      label: "Sugerir oração",
+      available: true,
+    },
+    {
       id: "moderation",
       icon: ModerationIcon,
       label: "Moderação",
@@ -225,6 +242,11 @@ function PublicApp() {
 }
 
   function handlePrayerStart(prayer = null) {
+    if (crawlTimerRef.current) {
+      window.clearTimeout(crawlTimerRef.current);
+      crawlTimerRef.current = null;
+    }
+
     setPrayerCrawlRunId(
       (current) => current + 1
     );
@@ -232,11 +254,21 @@ function PublicApp() {
     setActivePrayer(prayer);
     setPrayerCrawlActive(true);
 
-    if (prayer) {
+    if (prayer?.audio) {
       audioControlsRef.current?.startPrayer({
         audio: prayer.audio,
         title: prayer.title,
       });
+
+      return;
+    }
+
+    if (prayer) {
+      crawlTimerRef.current = window.setTimeout(() => {
+        setPrayerCrawlActive(false);
+        setActivePrayer(null);
+        crawlTimerRef.current = null;
+      }, 40000);
 
       return;
     }
@@ -250,6 +282,11 @@ function PublicApp() {
   }
 
   function handlePrayerAudioEnd() {
+    if (crawlTimerRef.current) {
+      window.clearTimeout(crawlTimerRef.current);
+      crawlTimerRef.current = null;
+    }
+
     setPrayerCrawlActive(false);
     setActivePrayer(null);
   }
@@ -361,6 +398,9 @@ function PublicApp() {
             onOfferPrayer={handleLibraryPrayerStart}
           />
         );
+
+      case "suggest-prayer":
+        return <PrayerSuggestionForm />;
 
       default:
         return null;

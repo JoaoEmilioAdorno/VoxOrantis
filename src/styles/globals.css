@@ -2178,6 +2178,114 @@ p {
   margin: 24px 0;
 }
 
+.prayer-suggestion-form {
+  width: 100%;
+}
+
+.prayer-suggestion-form input,
+.prayer-suggestion-form textarea,
+.moderation-editor-label input,
+.moderation-editor-label textarea {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+
+  outline: none;
+
+  background: rgba(2, 6, 23, 0.72);
+  color: var(--text-primary);
+
+  font: inherit;
+  line-height: 1.55;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.prayer-suggestion-form input:focus,
+.prayer-suggestion-form textarea:focus,
+.moderation-editor-label input:focus,
+.moderation-editor-label textarea:focus {
+  border-color: rgba(250, 204, 21, 0.48);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.08);
+}
+
+.prayer-suggestion-form textarea,
+.moderation-editor-label textarea {
+  resize: vertical;
+}
+
+.prayer-suggestion-form .chapel-primary-button {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.moderation-subsection-title {
+  margin: 26px 0 12px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.moderation-empty-compact {
+  padding: 16px;
+
+  border: 1px dashed var(--border-soft);
+  border-radius: 8px;
+
+  color: var(--text-muted);
+
+  font-size: 0.86rem;
+  text-align: center;
+}
+
+.moderation-editor-label {
+  display: block;
+
+  margin-bottom: 14px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.moderation-editor-label input,
+.moderation-editor-label textarea {
+  display: block;
+  margin-top: 7px;
+}
+
+.moderation-suggestion-title {
+  margin-bottom: 10px;
+
+  color: var(--text-primary);
+
+  font-size: 1.05rem;
+}
+
+.moderation-secondary-button {
+  border-color: rgba(148, 163, 184, 0.26) !important;
+  background: rgba(148, 163, 184, 0.1) !important;
+  color: var(--text-secondary) !important;
+}
+
+.moderation-actions-wide {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .moderation-actions-wide {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* =========================================================
    LOGIN DA MODERAÇÃO
 ========================================================= */

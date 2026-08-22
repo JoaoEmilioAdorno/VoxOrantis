@@ -12,6 +12,8 @@ import {
   approvePendingMiracleRequest,
   rejectPendingMiracleRequest,
 } from "../../services/moderationService";
+import { loadPrayerSuggestionsForModeration } from "../../services/prayerSuggestionModerationService";
+import PrayerSuggestionModeration from "./PrayerSuggestionModeration";
 
 export default function ModerationPanel() {
   const [activeTab, setActiveTab] =
@@ -21,6 +23,9 @@ export default function ModerationPanel() {
     useState([]);
 
   const [miracleRequests, setMiracleRequests] =
+    useState([]);
+
+  const [prayerSuggestions, setPrayerSuggestions] =
     useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -34,14 +39,16 @@ export default function ModerationPanel() {
     setError("");
 
     try {
-      const [prayerData, miracleData] =
+      const [prayerData, miracleData, suggestionData] =
         await Promise.all([
           loadPendingPrayerRequests(),
           loadPendingMiracleRequests(),
+          loadPrayerSuggestionsForModeration(),
         ]);
 
       setPrayerRequests(prayerData);
       setMiracleRequests(miracleData);
+      setPrayerSuggestions(suggestionData);
     } catch (err) {
       console.error(
         "Erro ao carregar itens para moderação:",
@@ -180,7 +187,8 @@ export default function ModerationPanel() {
         <div className="moderation-total">
           <strong>
             {prayerRequests.length +
-              miracleRequests.length}
+              miracleRequests.length +
+              prayerSuggestions.length}
           </strong>
 
           <span>pendentes</span>
@@ -239,6 +247,28 @@ export default function ModerationPanel() {
 
           <strong>
             {miracleRequests.length}
+          </strong>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={
+            activeTab === "suggestions"
+          }
+          className={
+            activeTab === "suggestions"
+              ? "moderation-tab active"
+              : "moderation-tab"
+          }
+          onClick={() =>
+            setActiveTab("suggestions")
+          }
+        >
+          <span>Sugestões de orações</span>
+
+          <strong>
+            {prayerSuggestions.length}
           </strong>
         </button>
       </div>
@@ -439,6 +469,17 @@ export default function ModerationPanel() {
             </div>
           )}
         </section>
+      )}
+
+      {activeTab === "suggestions" && (
+        <PrayerSuggestionModeration
+          suggestions={prayerSuggestions}
+          processingId={processingId}
+          setProcessingId={setProcessingId}
+          reload={loadRequests}
+          setError={setError}
+          formatDate={formatDate}
+        />
       )}
     </div>
   );
