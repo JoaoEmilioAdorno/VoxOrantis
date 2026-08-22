@@ -4,12 +4,12 @@ import {
   useState,
 } from "react";
 
-import PrayerChapel from "./components/chapel/PrayerChapel";
+import PrayerChapel from "./components/Chapel/PrayerChapel";
 import PrayerLibrary from "./components/prayers/PrayerLibrary";
 import PrayerSuggestionForm from "./components/prayers/PrayerSuggestionForm";
 import PrayerCrawl from "./components/prayer/PrayerCrawl";
 
-import MiracleChapel from "./components/chapel/MiracleChapel";
+import MiracleChapel from "./components/Chapel/MiracleChapel";
 
 import "./styles/globals.css";
 
@@ -193,6 +193,9 @@ function PublicApp() {
     setActivePanel,
   ] = useState(null);
 
+  const [pixCopied, setPixCopied] =
+    useState(false);
+
   const menuItems = [
     {
       id: "about",
@@ -295,6 +298,21 @@ function PublicApp() {
     setActivePanel(null);
   }
 
+  async function handleCopyPix() {
+    try {
+      await navigator.clipboard.writeText(
+        "xomanoje@gmail.com"
+      );
+      setPixCopied(true);
+
+      window.setTimeout(() => {
+        setPixCopied(false);
+      }, 2500);
+    } catch {
+      setPixCopied(false);
+    }
+  }
+
   function renderPanelContent() {
     switch (activePanel) {
       case "about":
@@ -368,15 +386,39 @@ function PublicApp() {
             </p>
 
             <div className="donation-message">
+              <span className="donation-kicker">
+                Faça parte desta corrente
+              </span>
+
+              <h3>Adote esta missão</h3>
+
               <p>
-                Caso sinta no seu coração e possa ajudar
-                com os custos de implantação e manutenção
-                do Vox Orantis, você pode fazer uma doação
-                de qualquer valor pelo Pix:
+                Sua contribuição ajuda a manter o Vox Orantis
+                no ar e a levar esta corrente de oração cada
+                vez mais longe. Adote esta missão com uma
+                doação de qualquer valor.
               </p>
 
-              <p className="panel-highlight">
-                xomanoje@gmail.com
+              <div className="pix-card">
+                <span className="pix-label">Chave PIX</span>
+                <strong className="pix-key">
+                  xomanoje@gmail.com
+                </strong>
+
+                <button
+                  type="button"
+                  className="pix-copy-button"
+                  onClick={handleCopyPix}
+                >
+                  {pixCopied
+                    ? "PIX copiado!"
+                    : "Copiar chave PIX"}
+                </button>
+              </div>
+
+              <p className="donation-note">
+                Cada ajuda, independentemente do valor,
+                mantém uma luz acesa nesta missão.
               </p>
             </div>
 

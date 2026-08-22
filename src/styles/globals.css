@@ -690,6 +690,151 @@ body {
   height: 0;
 }
 
+.info-panel-content > h2 {
+  margin-bottom: 1.5rem;
+
+  color: var(--text-primary);
+
+  font-size: 1.8rem;
+}
+
+.info-panel-content > p {
+  margin-bottom: 1rem;
+
+  line-height: 1.65;
+}
+
+.donation-message {
+  position: relative;
+
+  margin: 2rem 0 1.5rem;
+  padding: 1.5rem;
+
+  border: 1px solid rgba(250, 204, 21, 0.48);
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(250, 204, 21, 0.2),
+      transparent 45%
+    ),
+    rgba(15, 23, 42, 0.92);
+
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+
+  text-align: center;
+}
+
+.donation-kicker {
+  display: inline-block;
+
+  margin-bottom: 0.6rem;
+
+  color: var(--accent);
+
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.donation-message h3 {
+  margin-bottom: 0.8rem;
+
+  color: var(--text-primary);
+
+  font-size: 1.45rem;
+}
+
+.donation-message > p {
+  color: var(--text-secondary);
+
+  line-height: 1.6;
+}
+
+.pix-card {
+  margin: 1.25rem 0 1rem;
+  padding: 1.1rem;
+
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: 12px;
+
+  background: rgba(2, 6, 23, 0.72);
+}
+
+.pix-label {
+  display: block;
+
+  margin-bottom: 0.35rem;
+
+  color: var(--text-muted);
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.pix-key {
+  display: block;
+
+  color: var(--accent);
+
+  font-size: 1.12rem;
+  overflow-wrap: anywhere;
+}
+
+.pix-copy-button {
+  width: 100%;
+
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+
+  border: 0;
+  border-radius: 9px;
+
+  background: var(--accent);
+  color: #111827;
+
+  font: inherit;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+.pix-copy-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.pix-copy-button:focus-visible {
+  outline: 3px solid rgba(250, 204, 21, 0.35);
+  outline-offset: 3px;
+}
+
+.donation-message .donation-note {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.84rem;
+  font-style: italic;
+}
+
+.panel-highlight {
+  color: var(--accent);
+
+  font-weight: 700;
+  text-align: center;
+}
+
 
 /* =========================================================
    CAPELA DE ORAÇÕES
