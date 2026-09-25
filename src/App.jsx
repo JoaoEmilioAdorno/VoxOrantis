@@ -352,7 +352,9 @@ function PublicApp() {
   }
 
   function handleLibraryPrayerStart(prayer) {
-    closePanel();
+    if (!prayer?.keepDevotionOpen) {
+      closePanel();
+    }
     handlePrayerStart(prayer);
   }
 

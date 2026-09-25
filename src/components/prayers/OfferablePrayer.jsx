@@ -5,6 +5,7 @@ import usePrayer, {
 export default function OfferablePrayer({
   prayer,
   onPrayerStart,
+  onPrayerSubmitted,
 }) {
   const {
     loading,
@@ -18,6 +19,8 @@ export default function OfferablePrayer({
       prayerType: prayer.id,
       onAccepted: () =>
         onPrayerStart?.(prayer),
+      onSubmitted: () =>
+        onPrayerSubmitted?.(prayer),
     });
   }
 

@@ -22,6 +22,12 @@ export default function DevotionReader({ devotion, title, prayerId, onOfferPraye
     if (position > 0) setPosition(position - 1);
     else if (!novena && sectionIndex > 0) { setSectionIndex(sectionIndex - 1); setPosition(expandSection(devotion.sections[sectionIndex - 1]).length - 1); }
   }
+  function startCurrentPrayer(prayer) {
+    onOfferPrayer?.({ ...prayer, keepDevotionOpen: true });
+  }
+  function completeCurrentPrayer() {
+    next();
+  }
   return <section className="prayer-chapel devotion-reader">
     {onBack && <button className="chapel-secondary-button" onClick={onBack}>{backLabel || `Voltar para ${novena ? "novenas" : "terços"}`}</button>}
     <header className="prayer-chapel-header"><h2>{title}</h2><p className="prayer-chapel-intro">{novena ? "Escolha o dia que deseja rezar. Não há registro nem acompanhamento dos dias rezados." : "Acompanhe cada oração na ordem do roteiro. A posição de leitura não é salva."}</p></header>
@@ -35,7 +41,7 @@ export default function DevotionReader({ devotion, title, prayerId, onOfferPraye
       {!current.reading && <p>{current.repetition} de {current.repetitions} {current.repetitions === 1 ? "repetição" : "repetições"}</p>}
       <p className="prayer-library-text">{current.text}</p>
       {current.audio && <audio className="prayer-library-audio" controls preload="metadata" src={current.audio}>Seu navegador não suporta reprodução de áudio.</audio>}
-      {offeredPrayer && <div className="devotion-prayer-offer"><OfferablePrayer prayer={offeredPrayer} onPrayerStart={onOfferPrayer} /></div>}
+      {offeredPrayer && <div className="devotion-prayer-offer"><OfferablePrayer key={`${offeredPrayer.id}:${position}:${current.repetition}`} prayer={offeredPrayer} onPrayerStart={startCurrentPrayer} onPrayerSubmitted={completeCurrentPrayer} /></div>}
     </article>
     <nav className="devotion-actions" aria-label="Navegação da leitura">
       <button className="chapel-secondary-button" disabled={position === 0 && (novena || sectionIndex === 0)} onClick={previous}>Oração anterior</button>

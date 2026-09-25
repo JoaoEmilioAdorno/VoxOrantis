@@ -64,6 +64,7 @@ export default function usePrayer() {
   async function submitPrayer({
     prayerType = "ave-maria",
     onAccepted,
+    onSubmitted,
   } = {}) {
     const now = Date.now();
 
@@ -144,6 +145,8 @@ export default function usePrayer() {
       setStatus(
         PRAYER_STATUS.SUCCESS
       );
+
+      onSubmitted?.();
 
       return true;
     } catch (err) {
