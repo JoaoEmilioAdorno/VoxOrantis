@@ -1,4 +1,6 @@
+import { decodeDevotion, DEVOTION_PREFIX } from "../content/devotions";
 import {
+  deletePublishedPrayer,
   getModerationPrayerSuggestions,
   markPrayerSuggestionReviewed,
   publishPrayerSuggestion,
@@ -26,6 +28,7 @@ function validateSuggestion(title, text) {
     throw new Error("A versão revisada excede os limites permitidos.");
   }
 
+  if (cleanText.startsWith(DEVOTION_PREFIX) && !decodeDevotion(cleanText)) throw new Error("O roteiro está inválido. Confira as etapas e repetições.");
   return { title: cleanTitle, text: cleanText };
 }
 
@@ -57,4 +60,8 @@ export async function publishSuggestion(suggestionId) {
 
 export async function rejectSuggestion(suggestionId) {
   await rejectPrayerSuggestion(suggestionId);
+}
+
+export function deletePublishedSuggestion(suggestionId) {
+  return deletePublishedPrayer(suggestionId);
 }

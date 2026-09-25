@@ -4,6 +4,7 @@ export default function PrayerButton({
   loading,
   status,
   onClick,
+  prayerTitle = "Ave Maria",
 }) {
   const isCooldown =
     status === PRAYER_STATUS.COOLDOWN;
@@ -17,16 +18,16 @@ export default function PrayerButton({
         return "Obtendo localização...";
 
       case PRAYER_STATUS.SENDING:
-        return "Oferecendo Ave Maria...";
+        return `Oferecendo ${prayerTitle}...`;
 
       case PRAYER_STATUS.SUCCESS:
-        return "Ave Maria oferecida ✓";
+        return "Oração oferecida ✓";
 
       case PRAYER_STATUS.COOLDOWN:
         return "Aguarde para oferecer outra";
 
       default:
-        return "Oferecer Ave Maria";
+        return `Oferecer ${prayerTitle}`;
     }
   }
 

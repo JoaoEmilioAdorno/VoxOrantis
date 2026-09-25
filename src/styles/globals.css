@@ -37,6 +37,92 @@ body {
   font-family: var(--font-family);
 }
 
+/* =========================================================
+   INSTALAÇÃO DO APP
+========================================================= */
+
+.install-app {
+  position: fixed;
+  right: 18px;
+  top: 18px;
+  z-index: 100;
+
+  width: min(420px, calc(100vw - 36px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 42px 14px 14px;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 14px;
+
+  background: rgba(2, 6, 23, 0.96);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(16px);
+}
+
+.install-app-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.install-app-copy {
+  flex: 1;
+}
+
+.install-app-copy strong {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.install-app-copy p {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.install-app-button {
+  padding: 9px 13px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #111827;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.install-app-close {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .install-app {
+    top: auto;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: calc(100vw - 20px);
+  }
+}
+
 
 /* =========================================================
    ESTRUTURA PRINCIPAL
@@ -309,6 +395,8 @@ body {
   transition:
     background 0.2s ease,
     color 0.2s ease;
+
+  text-decoration: none;
 }
 
 .side-menu-item:hover {
@@ -503,7 +591,8 @@ body {
   color: var(--text-primary);
 }
 
-.prayer-layer input {
+.prayer-layer input,
+.prayer-layer .prayer-choice {
   width: 100%;
 
   padding: 0.8rem 0.9rem;
@@ -527,9 +616,24 @@ body {
   color: var(--text-muted);
 }
 
-.prayer-layer input:focus {
+.prayer-layer input:focus,
+.prayer-layer .prayer-choice:focus {
   border-color: rgba(250, 204, 21, 0.55);
 }
+
+.prayer-choice-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  text-align: left;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.prayer-choice option {
+  background: #0f172a;
+  color: #fff;
+}
+
 
 .prayer-layer button {
   width: 100%;
@@ -1716,6 +1820,7 @@ p {
 
 .moderation-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 
   margin-bottom: 28px;
@@ -1885,6 +1990,7 @@ p {
 
 .moderation-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
 
   gap: 10px;
@@ -2436,7 +2542,12 @@ p {
 ========================================================= */
 
 .moderation-page {
-  min-height: 100dvh;
+  height: 100dvh;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  overflow-wrap: anywhere;
 
   padding: 28px 32px 60px;
 
@@ -2722,4 +2833,5 @@ p {
   .moderator-login-heading h2 {
     font-size: 1.45rem;
   }
+
 }

@@ -27,6 +27,9 @@ export default function ModerationPanel() {
 
   const [prayerSuggestions, setPrayerSuggestions] =
     useState([]);
+  const pendingSuggestionCount = prayerSuggestions.filter(
+    suggestion => suggestion.status !== "published"
+  ).length;
 
   const [loading, setLoading] = useState(true);
 
@@ -188,7 +191,7 @@ export default function ModerationPanel() {
           <strong>
             {prayerRequests.length +
               miracleRequests.length +
-              prayerSuggestions.length}
+              pendingSuggestionCount}
           </strong>
 
           <span>pendentes</span>
@@ -268,9 +271,10 @@ export default function ModerationPanel() {
           <span>Sugestões de orações</span>
 
           <strong>
-            {prayerSuggestions.length}
+            {pendingSuggestionCount}
           </strong>
         </button>
+
       </div>
 
       {activeTab === "prayers" && (
@@ -481,6 +485,7 @@ export default function ModerationPanel() {
           formatDate={formatDate}
         />
       )}
+
     </div>
   );
 }

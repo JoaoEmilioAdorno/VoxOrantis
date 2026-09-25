@@ -6,7 +6,6 @@ import {
 
 import PrayerChapel from "./components/Chapel/PrayerChapel";
 import PrayerLibrary from "./components/prayers/PrayerLibrary";
-import PrayerSuggestionForm from "./components/prayers/PrayerSuggestionForm";
 import PrayerCrawl from "./components/prayer/PrayerCrawl";
 
 import MiracleChapel from "./components/Chapel/MiracleChapel";
@@ -16,20 +15,23 @@ import "./styles/globals.css";
 import WorldGlobe from "./components/globe/WorldGlobe";
 import PrayerForm from "./components/prayer/PrayerForm";
 import AudioControls from "./components/common/AudioControls";
+import InstallApp from "./components/common/InstallApp";
 
 import ModeratorLogin from "./components/moderation/ModeratorLogin";
 import ModerationPanel from "./components/moderation/ModerationPanel";
 
 import { supabase } from "./lib/supabase";
+import { canAccessModeration } from "./services/authService";
 
 import {
   AboutIcon,
   PrayerIcon,
   MiracleIcon,
   OtherPrayersIcon,
-  SuggestPrayerIcon,
   ModerationIcon,
+  ShopIcon,
 } from "./components/common/MenuIcons";
+import { config } from "./lib/config";
 
 import useStats from "./hooks/useStats";
 import usePrayerMap from "./hooks/usePrayerMap";
@@ -42,21 +44,70 @@ function ModerationApp() {
   const [moderatorSession, setModeratorSession] =
     useState(null);
 
+  const [moderatorAuthorized, setModeratorAuthorized] =
+    useState(false);
+
+  const [authorizationError, setAuthorizationError] =
+    useState("");
+
   const [authLoading, setAuthLoading] =
     useState(true);
 
   useEffect(() => {
     let mounted = true;
 
+    async function resolveSession(session) {
+      if (!session) {
+        if (mounted) {
+          setModeratorSession(null);
+          setModeratorAuthorized(false);
+          setAuthorizationError("");
+          setAuthLoading(false);
+        }
+
+        return;
+      }
+
+      try {
+        const authorized = await canAccessModeration(
+          session.user.id
+        );
+
+        if (mounted) {
+          setModeratorSession(session);
+          setModeratorAuthorized(authorized);
+          setAuthorizationError(
+            authorized
+              ? ""
+              : "Sua conta não possui permissão de moderação."
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Erro ao verificar permissão de moderação:",
+          error
+        );
+
+        if (mounted) {
+          setModeratorSession(session);
+          setModeratorAuthorized(false);
+          setAuthorizationError(
+            "Não foi possível verificar sua permissão. Tente novamente."
+          );
+        }
+      } finally {
+        if (mounted) {
+          setAuthLoading(false);
+        }
+      }
+    }
+
     async function loadSession() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
-      if (mounted) {
-        setModeratorSession(session);
-        setAuthLoading(false);
-      }
+      await resolveSession(session);
     }
 
     loadSession();
@@ -65,9 +116,8 @@ function ModerationApp() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (mounted) {
-          setModeratorSession(session);
-        }
+        setAuthLoading(true);
+        void resolveSession(session);
       }
     );
 
@@ -77,8 +127,8 @@ function ModerationApp() {
     };
   }, []);
 
-  function handleModeratorLogin(session) {
-    setModeratorSession(session);
+  function handleModeratorLogin() {
+    setAuthLoading(true);
   }
 
   async function handleModeratorLogout() {
@@ -94,6 +144,8 @@ function ModerationApp() {
     }
 
     setModeratorSession(null);
+    setModeratorAuthorized(false);
+    setAuthorizationError("");
   }
 
   if (authLoading) {
@@ -141,8 +193,25 @@ function ModerationApp() {
           <ModeratorLogin
             onLogin={handleModeratorLogin}
           />
-        ) : (
+        ) : moderatorAuthorized ? (
           <ModerationPanel />
+        ) : (
+          <div className="moderator-login-wrapper">
+            <div className="moderator-login-card">
+              <div className="moderator-login-heading">
+                <h2>Acesso não autorizado</h2>
+                <p>{authorizationError}</p>
+              </div>
+
+              <button
+                type="button"
+                className="moderator-login-button"
+                onClick={handleModeratorLogout}
+              >
+                Entrar com outra conta
+              </button>
+            </div>
+          </div>
         )}
       </main>
     </div>
@@ -221,12 +290,14 @@ function PublicApp() {
       label: "Outras Orações",
       available: false,
     },
-    {
-      id: "suggest-prayer",
-      icon: SuggestPrayerIcon,
-      label: "Sugerir oração",
-      available: true,
-    },
+    ...(config.shopUrl
+      ? [{
+          id: "shop",
+          icon: ShopIcon,
+          label: "Loja",
+          href: config.shopUrl,
+        }]
+      : []),
     {
       id: "moderation",
       icon: ModerationIcon,
@@ -245,6 +316,7 @@ function PublicApp() {
 }
 
   function handlePrayerStart(prayer = null) {
+    audioControlsRef.current?.stopPrayer();
     if (crawlTimerRef.current) {
       window.clearTimeout(crawlTimerRef.current);
       crawlTimerRef.current = null;
@@ -441,9 +513,6 @@ function PublicApp() {
           />
         );
 
-      case "suggest-prayer":
-        return <PrayerSuggestionForm />;
-
       default:
         return null;
     }
@@ -463,6 +532,34 @@ function PublicApp() {
           {menuItems.map((item) => {
             const Icon = item.icon;
 
+            const content = (
+              <>
+                <span className="side-menu-icon">
+                  <Icon />
+                </span>
+
+                <span className="side-menu-label">
+                  {item.label}
+                </span>
+              </>
+            );
+
+            if (item.href) {
+              return (
+                <a
+                  key={item.id}
+                  className="side-menu-item"
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={item.label}
+                  aria-label={`${item.label} (abre em nova aba)`}
+                >
+                  {content}
+                </a>
+              );
+            }
+
             return (
               <button
                 key={item.id}
@@ -478,13 +575,7 @@ function PublicApp() {
                 title={item.label}
                 aria-label={item.label}
               >
-                <span className="side-menu-icon">
-                  <Icon />
-                </span>
-
-                <span className="side-menu-label">
-                  {item.label}
-                </span>
+                {content}
               </button>
             );
           })}
@@ -575,6 +666,8 @@ function PublicApp() {
           </div>
         </div>
       )}
+
+      <InstallApp />
     </div>
   );
 }

@@ -17,6 +17,7 @@ function createGlobePoint(prayer) {
     size: 0.25,
     color: "#FFD700",
 
+
     opacity: 1,
     intensity: 1,
 
@@ -197,6 +198,7 @@ export default function usePrayerMap() {
                 };
               })
             );
+
           }
         }
       )

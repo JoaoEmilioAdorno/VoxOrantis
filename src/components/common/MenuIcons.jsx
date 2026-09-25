@@ -103,7 +103,7 @@ export function ModerationIcon() {
   );
 }
 
-export function SuggestPrayerIcon() {
+export function ShopIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -116,8 +116,9 @@ export function SuggestPrayerIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+      <path d="M3 10h18l-1.5-5h-15L3 10Z" />
+      <path d="M5 10v10h14V10" />
+      <path d="M9 20v-6h6v6" />
     </svg>
   );
 }

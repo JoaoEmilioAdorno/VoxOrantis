@@ -18,6 +18,7 @@ const AudioControls = forwardRef(
   ) {
     const backgroundRef = useRef(null);
     const prayerRef = useRef(null);
+    const playRequestRef = useRef(0);
 
     const [backgroundPlaying, setBackgroundPlaying] =
       useState(false);
@@ -48,9 +49,10 @@ const AudioControls = forwardRef(
       const prayer = prayerRef.current;
       const background = backgroundRef.current;
 
-      if (!prayer || prayerPlaying) {
+      if (!prayer) {
         return;
       }
+      const playRequest = ++playRequestRef.current;
 
       try {
         prayer.pause();
@@ -75,7 +77,8 @@ const AudioControls = forwardRef(
 
         await playPromise;
       } catch (error) {
-        setPrayerPlaying(false);
+        if (playRequest !== playRequestRef.current) return;
+        handlePrayerEnded();
 
         console.error(
           `Não foi possível reproduzir ${title}:`,
@@ -88,6 +91,11 @@ const AudioControls = forwardRef(
       ref,
       () => ({
         startPrayer,
+        stopPrayer() {
+          ++playRequestRef.current;
+          prayerRef.current?.pause();
+          handlePrayerEnded();
+        },
       })
     );
 
@@ -164,6 +172,7 @@ const AudioControls = forwardRef(
           src={aveMariaAudio}
           preload="metadata"
           onEnded={handlePrayerEnded}
+          onError={handlePrayerEnded}
         />
 
         <button

@@ -1,8 +1,12 @@
+import { MARIAN_ROSARY } from "../../content/devotions";
+import DevotionForm from "../devotions/DevotionForm";
+import DevotionReader from "../devotions/DevotionReader";
 import { useEffect, useMemo, useState } from "react";
 
 import { getPrayers as getStaticPrayers } from "../../content/prayers";
 import { loadPublishedPrayers } from "../../services/prayerSuggestionService";
 import OfferablePrayer from "./OfferablePrayer";
+import PrayerSuggestionForm from "./PrayerSuggestionForm";
 
 export default function PrayerLibrary({
   onOfferPrayer,
@@ -11,6 +15,9 @@ export default function PrayerLibrary({
     useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [addingPrayer, setAddingPrayer] = useState(false);
+  const [category, setCategory] = useState(null);
+  const [creatingDevotion, setCreatingDevotion] = useState(false);
 
   const prayers = useMemo(
     () =>
@@ -31,11 +38,11 @@ export default function PrayerLibrary({
 
     async function loadPrayers() {
       try {
-        const communityPrayers =
-          await loadPublishedPrayers();
+        const approvedPrayers =
+          await loadPublishedPrayers({ includeDevotions: true });
 
         if (active) {
-          setPublishedPrayers(communityPrayers);
+          setPublishedPrayers(approvedPrayers);
         }
       } catch (loadError) {
         console.error(
@@ -45,7 +52,7 @@ export default function PrayerLibrary({
 
         if (active) {
           setError(
-            "As orações da comunidade não puderam ser carregadas."
+            "As orações publicadas não puderam ser carregadas."
           );
         }
       } finally {
@@ -56,11 +63,43 @@ export default function PrayerLibrary({
     }
 
     loadPrayers();
+    window.addEventListener("focus", loadPrayers);
 
     return () => {
       active = false;
+      window.removeEventListener("focus", loadPrayers);
     };
   }, []);
+
+  if (creatingDevotion) return <DevotionForm kind={category} onBack={() => setCreatingDevotion(false)} />;
+  if (selectedPrayer?.devotion) return <DevotionReader key={selectedPrayer.id} title={selectedPrayer.title} prayerId={selectedPrayer.id} devotion={selectedPrayer.devotion} onOfferPrayer={onOfferPrayer} onBack={() => setSelectedPrayer(null)} />;
+  if (category) {
+    const collection = [...(category === "rosary" ? [MARIAN_ROSARY] : []), ...prayers.filter(prayer => prayer.devotion?.kind === category)];
+    return <section className="prayer-chapel">
+      <button className="chapel-secondary-button" onClick={() => setCategory(null)}>Voltar para outras orações</button>
+      <header className="prayer-chapel-header"><h2>{category === "rosary" ? "Terços" : "Novenas"}</h2><p className="prayer-chapel-intro">{category === "rosary" ? "Roteiros com etapas, mistérios e repetições configuradas." : "Escolha uma novena e o dia que deseja ler, sem acompanhamento ou registro de progresso."}</p></header>
+      <button className="chapel-primary-button" onClick={() => setCreatingDevotion(true)}>{category === "rosary" ? "Cadastrar terço" : "Cadastrar novena"}</button>
+      <p className="prayer-chapel-moderation-note">Novos roteiros só aparecem após aprovação da moderação.</p>
+      {loading && <p>Carregando roteiros publicados...</p>}{error && <p className="prayer-chapel-error">{error}</p>}
+      <div className="prayer-request-list">{collection.map(prayer => <button className="prayer-library-card" key={prayer.id} onClick={() => setSelectedPrayer(prayer)}><div><strong>{prayer.title}</strong><p>{prayer.subtitle || (category === "novena" ? `${prayer.devotion.sections.length} dias` : `${prayer.devotion.sections.length} etapas`)}</p></div></button>)}</div>
+      {!loading && !collection.length && <p className="prayer-chapel-empty">Ainda não há {category === "novena" ? "novenas publicadas" : "terços publicados"}. Cadastre um roteiro para revisão.</p>}
+    </section>;
+  }
+
+  if (addingPrayer) {
+    return (
+      <>
+        <button
+          type="button"
+          className="chapel-secondary-button"
+          onClick={() => setAddingPrayer(false)}
+        >
+          Voltar para outras orações
+        </button>
+        <PrayerSuggestionForm />
+      </>
+    );
+  }
 
   if (selectedPrayer) {
     return (
@@ -125,6 +164,21 @@ export default function PrayerLibrary({
         </p>
       </header>
 
+      <div className="devotion-categories">
+        <button type="button" onClick={() => setCategory("rosary")}><strong>Terços</strong><span>Orações em sequência, mistérios e repetições.</span></button>
+        <button type="button" onClick={() => setCategory("novena")}><strong>Novenas</strong><span>Orações organizadas por dia, para você escolher e ler.</span></button>
+      </div>
+      <button
+        type="button"
+        className="chapel-primary-button"
+        onClick={() => setAddingPrayer(true)}
+      >
+        Adicionar nova oração
+      </button>
+      <p className="prayer-chapel-moderation-note">
+        Novas orações só serão publicadas após aprovação da moderação.
+      </p>
+
       <div className="prayer-chapel-divider" />
 
       <section className="prayer-chapel-requests">
@@ -142,13 +196,13 @@ export default function PrayerLibrary({
           </p>
         )}
 
-        {!loading && prayers.length === 0 ? (
+        {!loading && prayers.filter(prayer => !prayer.devotion).length === 0 ? (
           <p className="prayer-chapel-empty">
             Ainda não há outras orações disponíveis.
           </p>
-        ) : prayers.length > 0 ? (
+        ) : prayers.some(prayer => !prayer.devotion) ? (
           <div className="prayer-request-list">
-            {prayers.map((prayer) => (
+            {prayers.filter(prayer => !prayer.devotion).map((prayer) => (
               <button
                 key={prayer.id}
                 type="button"
